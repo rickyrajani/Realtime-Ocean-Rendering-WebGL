@@ -1,9 +1,9 @@
-#version 100
+#version 300 es
 precision highp float;
 
-attribute vec3 a_position;
+in vec3 a_position;
 
-varying vec2 v_uv;
+out vec2 v_uv;
 
 void main() {
     gl_Position = vec4(a_position, 1.0);

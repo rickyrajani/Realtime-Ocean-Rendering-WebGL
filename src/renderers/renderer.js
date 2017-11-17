@@ -4,6 +4,8 @@ import { loadShaderProgram } from '../utils';
 import { NUM_LIGHTS } from '../scene';
 import vsSource from '../shaders/ocean.vert.glsl';
 import fsSource from '../shaders/ocean.frag.glsl.js';
+import vsSourceTerrain from '../shaders/terrain.vert.glsl';
+import fsSourceTerrain from '../shaders/terrain.frag.glsl.js';
 import TextureBuffer from './textureBuffer';
 
 export default class Renderer {

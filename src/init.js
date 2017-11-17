@@ -18,14 +18,14 @@ export function abort(message) {
 export const canvas = document.getElementById('canvas');
 
 // Initialize the WebGL context
-const glContext = canvas.getContext('webgl');
+const glContext = canvas.getContext('experimental-webgl2');
 
 // Get a debug context
 export const gl = DEBUG ? WebGLDebug.makeDebugContext(glContext, (err, funcName, args) => {
   abort(WebGLDebug.glEnumToString(err) + ' was caused by call to: ' + funcName);
 }) : glContext;
 
-const supportedExtensions = gl.getSupportedExtensions();
+// const supportedExtensions = gl.getSupportedExtensions();
 const requiredExtensions = [
   'OES_texture_float',
   'OES_texture_float_linear',
@@ -35,19 +35,21 @@ const requiredExtensions = [
 ];
 
 // Check that all required extensions are supported
-for (let i = 0; i < requiredExtensions.length; ++i) {
-  if (supportedExtensions.indexOf(requiredExtensions[i]) < 0) {
-    throw 'Unable to load extension ' + requiredExtensions[i];
-  }
-}
+// for (let i = 0; i < requiredExtensions.length; ++i) {
+//   if (supportedExtensions.indexOf(requiredExtensions[i]) < 0) {
+//     throw 'Unable to load extension ' + requiredExtensions[i];
+//   }
+// }
 
 // Get the maximum number of draw buffers
-gl.getExtension('OES_texture_float');
-gl.getExtension('OES_texture_float_linear');
-gl.getExtension('OES_element_index_uint');
-gl.getExtension('WEBGL_depth_texture');
-export const WEBGL_draw_buffers = gl.getExtension('WEBGL_draw_buffers');
-export const MAX_DRAW_BUFFERS_WEBGL = gl.getParameter(WEBGL_draw_buffers.MAX_DRAW_BUFFERS_WEBGL);
+// gl.getExtension('OES_texture_float');
+// gl.getExtension('OES_texture_float_linear');
+// gl.getExtension('OES_element_index_uint');
+// gl.getExtension('WEBGL_depth_texture');
+//export const WEBGL_draw_buffers = gl.getExtension('WEBGL_draw_buffers');
+export const WEBGL_draw_buffers = gl.WEBGL_draw_buffers;
+//export const MAX_DRAW_BUFFERS_WEBGL = gl.getParameter(WEBGL_draw_buffers.MAX_DRAW_BUFFERS_WEBGL);
+export const MAX_DRAW_BUFFERS_WEBGL = WEBGL_draw_buffers.MAX_DRAW_BUFFERS_WEBGL;
 
 export const gui = new DAT.GUI();
 

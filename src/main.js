@@ -2,7 +2,6 @@ import { makeRenderLoop, camera, cameraControls, gui, gl } from './init';
 import Renderer from './renderers/renderer';
 import Scene from './scene';
 
-
 const renderer = new Renderer();
 
 const scene = new Scene();
