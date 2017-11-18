@@ -2,9 +2,9 @@ export default function(params) {
   return `#version 300 es
   precision highp float;
 
-  layout(location = 0) out vec4 v_position;
-  layout(location = 1) out vec4 v_normal;
-  
+  in vec4 v_position;
+  in vec4 v_normal;
+
   out vec4 v_color;
 
   void main() {

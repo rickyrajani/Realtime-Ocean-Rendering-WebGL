@@ -6,8 +6,8 @@ const renderer = new Renderer();
 
 const scene = new Scene();
 
-camera.position.set(0, 8, 0);
-cameraControls.target.set(0, 8, -1);
+camera.position.set(0, 4, 0);
+cameraControls.target.set(0, 2, -1);
 gl.enable(gl.DEPTH_TEST);
 
 function render() {

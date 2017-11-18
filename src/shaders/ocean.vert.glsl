@@ -8,6 +8,9 @@ in vec3 a_position;
 out vec4 v_position;
 out vec4 v_normal;
 
+//layout(location = 0) out vec4 v_position;
+//layout(location = 1) out vec4 v_normal;
+
 void main() {
     gl_Position = u_viewProjectionMatrix * vec4(a_position, 1.0);
     v_position = vec4(a_position, 1.0);

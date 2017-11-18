@@ -18,12 +18,15 @@ export function abort(message) {
 export const canvas = document.getElementById('canvas');
 
 // Initialize the WebGL context
-const glContext = canvas.getContext('experimental-webgl2');
+const glContext = canvas.getContext('webgl2');
+export const gl = glContext;
+
+//debugger;
 
 // Get a debug context
-export const gl = DEBUG ? WebGLDebug.makeDebugContext(glContext, (err, funcName, args) => {
-  abort(WebGLDebug.glEnumToString(err) + ' was caused by call to: ' + funcName);
-}) : glContext;
+// export const gl = DEBUG ? WebGLDebug.makeDebugContext(glContext, (err, funcName, args) => {
+//   abort(WebGLDebug.glEnumToString(err) + ' was caused by call to: ' + funcName);
+// }) : glContext;
 
 // const supportedExtensions = gl.getSupportedExtensions();
 const requiredExtensions = [
@@ -46,10 +49,10 @@ const requiredExtensions = [
 // gl.getExtension('OES_texture_float_linear');
 // gl.getExtension('OES_element_index_uint');
 // gl.getExtension('WEBGL_depth_texture');
-//export const WEBGL_draw_buffers = gl.getExtension('WEBGL_draw_buffers');
-export const WEBGL_draw_buffers = gl.WEBGL_draw_buffers;
-//export const MAX_DRAW_BUFFERS_WEBGL = gl.getParameter(WEBGL_draw_buffers.MAX_DRAW_BUFFERS_WEBGL);
-export const MAX_DRAW_BUFFERS_WEBGL = WEBGL_draw_buffers.MAX_DRAW_BUFFERS_WEBGL;
+// export const WEBGL_draw_buffers = gl.getExtension('WEBGL_draw_buffers');
+// export const WEBGL_draw_buffers = gl.WEBGL_draw_buffers;
+// export const MAX_DRAW_BUFFERS_WEBGL = gl.getParameter(WEBGL_draw_buffers.MAX_DRAW_BUFFERS_WEBGL);
+// export const MAX_DRAW_BUFFERS_WEBGL = WEBGL_draw_buffers.MAX_DRAW_BUFFERS_WEBGL;
 
 export const gui = new DAT.GUI();
 

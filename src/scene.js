@@ -9,7 +9,7 @@ export const LIGHT_DT = -0.03;
 // TODO: This controls the number of lights
 export const NUM_LIGHTS = 10;
 
-const OCEAN_SIZE = 100.0;
+const OCEAN_SIZE = 1000.0;
 const OCEAN_RESOLUTION = 256.0;
 const FLOAT_SIZE = 4;
 
