@@ -63,19 +63,25 @@ float PerlinNoise(float x, float y, float c) {
 }
 
 void main() {
-    float amplitude = 0.5;
+    float amplitude = 0.25;
     float y = PerlinNoise(a_position.x, a_position.z, amplitude) * 50.0;
-
-    float delta = 2.0;
     vec3 a = a_position;
-    a.y = y;
-    vec3 b = vec3(a_position.x + delta, a_position.y, a_position.z);
-    b.y = PerlinNoise(b.x, b.z, amplitude) * 50.0;
-    vec3 c = vec3(a_position.x, a_position.y, a_position.z + delta);
-    c.y = PerlinNoise(c.x, c.z, amplitude) * 50.0;
-    
-    vec3 dir = normalize(cross((b - a), (c - a)));
-    v_normal = dir;
+
+    if (y < 35.0) {
+        y = 35.0;
+        v_normal = vec3(0.0,1.0,0.0);
+        a.y = y;
+    } else {
+        float delta = 0.1;
+        a.y = y;
+        vec3 b = vec3(a_position.x + delta, a_position.y, a_position.z);
+        b.y = PerlinNoise(b.x, b.z, amplitude) * 50.0;
+        vec3 c = vec3(a_position.x, a_position.y, a_position.z + delta);
+        c.y = PerlinNoise(c.x, c.z, amplitude) * 50.0;
+        
+        vec3 dir = normalize(cross((b - a), (c - a)));
+        v_normal = dir;
+    }
 
     v_position = a;
     gl_Position = u_viewProjectionMatrix * vec4(a, 1.0);

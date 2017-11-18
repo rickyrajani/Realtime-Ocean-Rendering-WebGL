@@ -9,7 +9,7 @@ export const LIGHT_DT = -0.03;
 // TODO: This controls the number of lights
 export const NUM_LIGHTS = 10;
 
-const OCEAN_SIZE = 1000.0;
+const OCEAN_SIZE = 100.0;
 const OCEAN_RESOLUTION = 256.0;
 const FLOAT_SIZE = 4;
 
@@ -100,14 +100,14 @@ PerlinNoise(x, y, c) {
 }
 
   draw(shaderProgram) {
-    var temp = [];
-    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
-      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
-        temp.push(this.PerlinNoise(x, z, 0.25));
-      }
-    }
+    // var temp = [];
+    // for (let z = 0; z < OCEAN_RESOLUTION; z++) {
+    //   for (let x = 0; x < OCEAN_RESOLUTION; x++) {
+    //     temp.push(50.0*this.PerlinNoise(x, z, 0.75));
+    //   }
+    // }
   
-    debugger;
+    // debugger;
     
     var vertices = [];
     for (let z = 0; z < OCEAN_RESOLUTION; z++) {
@@ -128,9 +128,9 @@ PerlinNoise(x, y, c) {
         indices.push(UL);
         indices.push(BL);
         indices.push(BR);
+        indices.push(UL);                
         indices.push(BR);
         indices.push(UR);
-        indices.push(UL);        
       }
     }
 
