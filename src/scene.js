@@ -45,8 +45,70 @@ class Scene {
     }
   }
 
-  draw(shaderProgram) {
+Noise( x, y) {
+    var n = parseInt(x) + parseInt(y) * 57;
+    n = (n<<13) ^ n;
+    var noise = parseFloat( 1 - ( (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824);
+    noise = (noise + 1.0) / 2.0;
+    return noise;
+}
 
+LinearInterpolate(a, b, x) {
+    return  (a * (1.0 - x)) + b * x;
+}
+
+SmoothNoise(x, y) {
+    var corners = (this.Noise(x - 1.0, y - 1.0) + this.Noise(x + 1.0, y - 1.0) + this.Noise(x - 1.0, y + 1.0) + this.Noise(x + 1.0, y + 1.0)) / 16.0;
+    var sides = (this.Noise(x - 1.0, y) + this.Noise(x + 1.0, y) + this.Noise(x, y - 1.0) + this.Noise(x, y + 1.0)) / 8.0;
+    var center = this.Noise(x, y) / 4.0;
+    return corners + sides + center;
+}
+
+InterpolateNoise(x, y) {
+    var integer_X = parseInt(x);
+    var fractional_X = Math.abs(x - parseFloat(integer_X));
+    var integer_Y = parseInt(y);
+    var fractional_Y = Math.abs(y - parseFloat(integer_Y));
+
+    var v1 = this.SmoothNoise(parseFloat(integer_X), parseFloat(integer_Y));
+    var v2 = this.SmoothNoise(parseFloat(integer_X) + 1.0, parseFloat(integer_Y));
+    var v3 = this.SmoothNoise(parseFloat(integer_X), parseFloat(integer_Y) + 1.0);
+    var v4 = this.SmoothNoise(parseFloat(integer_X) + 1.0, parseFloat(integer_Y) + 1.0);
+
+    var i1 = this.LinearInterpolate(v1, v2, fractional_X);
+    var i2 = this.LinearInterpolate(v3, v4, fractional_X);
+
+    return this.LinearInterpolate(i1, i2, fractional_Y);
+}
+
+PerlinNoise(x, y, c) {
+    x = x * c;
+    y = y * c;
+    var total = 0.0;
+    var p = 0.5;
+    // number of octaves
+    var n = 6;
+    var max = 1.4;
+
+    for (let i = 0; i < n; i++) {
+        var frequency = Math.pow(2.0, parseFloat(i));
+        var amplitude = Math.pow(p, parseFloat(i));
+
+        total = total + this.InterpolateNoise(parseFloat(x) * frequency, parseFloat(y) * frequency) * amplitude;
+    }
+    return (total/max);
+}
+
+  draw(shaderProgram) {
+    var temp = [];
+    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
+      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
+        temp.push(this.PerlinNoise(x, z, 0.25));
+      }
+    }
+  
+    debugger;
+    
     var vertices = [];
     for (let z = 0; z < OCEAN_RESOLUTION; z++) {
       for (let x = 0; x < OCEAN_RESOLUTION; x++) {

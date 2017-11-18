@@ -8,20 +8,19 @@ export default function(params) {
     out vec4 v_color;
   
     void main() {
-      vec3 albedo = vec3(0,1,0);
+      vec3 albedo = vec3(0, 1, 0);
       vec3 normal = v_normal;
   
       vec3 fragColor = vec3(0.0);
   
-      vec3 sunLight = normalize(vec3(1, 20, -5));
+      vec3 sunLight = normalize(vec3(1, 75, -5));
       float NdotL = clamp(dot(normal, sunLight), 0.1, 1.0);
       fragColor += albedo * NdotL;
   
-      const vec3 ambientLight = vec3(0.025);
+      const vec3 ambientLight = vec3(0.25);
       fragColor += albedo * ambientLight;
-
-      // fragColor += vec3(0,0,v_position.y);
-  
+      vec3 temp = vec3(v_position.y/100.0, 0.0, 0.0);
+      fragColor = temp;
       v_color = vec4(fragColor, 1.0);
     }
     `;
