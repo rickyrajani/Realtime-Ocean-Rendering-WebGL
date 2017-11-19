@@ -1,18 +1,16 @@
 import { gl } from '../init';
 import { mat4, vec4 } from 'gl-matrix';
 import { loadShaderProgram } from '../utils';
-import { NUM_LIGHTS } from '../scene';
 import vsSource from '../shaders/ocean.vert.glsl';
 import fsSource from '../shaders/ocean.frag.glsl.js';
 import vsSourceTerrain from '../shaders/terrain.vert.glsl';
 import fsSourceTerrain from '../shaders/terrain.frag.glsl.js';
 import TextureBuffer from './textureBuffer';
 
+const NUM_LIGHTS = 0;
+
 export default class Renderer {
   constructor() {
-    // Create a texture to store light data
-    // this._lightTexture = new TextureBuffer(NUM_LIGHTS, 8);
-
     // Initialize a shader program. The fragment shader source is compiled based on the number of lights
     this._shaderProgram = loadShaderProgram(vsSourceTerrain, fsSourceTerrain({
       numLights: NUM_LIGHTS,
@@ -32,21 +30,6 @@ export default class Renderer {
     mat4.invert(this._viewMatrix, camera.matrixWorld.elements);
     mat4.copy(this._projectionMatrix, camera.projectionMatrix.elements);
     mat4.multiply(this._viewProjectionMatrix, this._projectionMatrix, this._viewMatrix);
-
-    // Update the buffer used to populate the texture packed with light data
-    /*
-    for (let i = 0; i < NUM_LIGHTS; ++i) {
-      this._lightTexture.buffer[this._lightTexture.bufferIndex(i, 0) + 0] = scene.lights[i].position[0];
-      this._lightTexture.buffer[this._lightTexture.bufferIndex(i, 0) + 1] = scene.lights[i].position[1];
-      this._lightTexture.buffer[this._lightTexture.bufferIndex(i, 0) + 2] = scene.lights[i].position[2];
-      this._lightTexture.buffer[this._lightTexture.bufferIndex(i, 0) + 3] = scene.lights[i].radius;
-
-      this._lightTexture.buffer[this._lightTexture.bufferIndex(i, 1) + 0] = scene.lights[i].color[0];
-      this._lightTexture.buffer[this._lightTexture.bufferIndex(i, 1) + 1] = scene.lights[i].color[1];
-      this._lightTexture.buffer[this._lightTexture.bufferIndex(i, 1) + 2] = scene.lights[i].color[2];
-    } */
-    // Update the light texture
-    // this._lightTexture.update();
 
     // Bind the default null framebuffer which is the screen
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);

@@ -11,7 +11,6 @@ cameraControls.target.set(0, 60, 21);
 gl.enable(gl.DEPTH_TEST);
 
 function render() {
-  scene.update();
   renderer.render(camera, scene);
 }
 
