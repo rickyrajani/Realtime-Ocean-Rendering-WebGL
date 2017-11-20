@@ -5,6 +5,8 @@ import vsSource from '../shaders/ocean.vert.glsl';
 import fsSource from '../shaders/ocean.frag.glsl.js';
 import vsSourceTerrain from '../shaders/terrain.vert.glsl';
 import fsSourceTerrain from '../shaders/terrain.frag.glsl.js';
+import vsSourceSkybox from '../shaders/skybox.vert.glsl';
+import fsSourceSkybox from '../shaders/skybox.frag.glsl.js';
 import TextureBuffer from './textureBuffer';
 
 const NUM_LIGHTS = 0;
@@ -15,8 +17,15 @@ export default class Renderer {
     this._shaderProgram = loadShaderProgram(vsSourceTerrain, fsSourceTerrain({
       numLights: NUM_LIGHTS,
     }), {
-      uniforms: ['u_viewProjectionMatrix', 'u_colmap', 'u_normap', 'u_lightbuffer'],
+      uniforms: ['u_viewProjectionMatrix'],
       attribs: ['a_position', 'a_normal', 'a_uv'],
+    });
+
+    this._shaderProgramSkybox = loadShaderProgram(vsSourceSkybox, fsSourceSkybox({
+      numLights: NUM_LIGHTS,
+    }), {
+      uniforms: ['u_viewProjectionMatrix'],
+      attribs: ['a_coords'],
     });
 
     this._projectionMatrix = mat4.create();
@@ -40,18 +49,20 @@ export default class Renderer {
     // Clear the frame
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    // Use this shader program
-    gl.useProgram(this._shaderProgram.glShaderProgram);
+    // Upload the camera matrix to skybox shader program
 
+    // Draw the skybox
+    gl.useProgram(this._shaderProgramSkybox.glShaderProgram);
+    gl.uniformMatrix4fv(this._shaderProgramSkybox.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
+    
+    scene.drawSkybox(this._shaderProgramSkybox);    
+    
     // Upload the camera matrix
+    
+    // Draw the terrain
+    gl.useProgram(this._shaderProgram.glShaderProgram);
     gl.uniformMatrix4fv(this._shaderProgram.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
-
-    // Set the light texture as a uniform input to the shader
-    // gl.activeTexture(gl.TEXTURE2);
-    // gl.bindTexture(gl.TEXTURE_2D, this._lightTexture.glTexture);
-    // gl.uniform1i(this._shaderProgram.u_lightbuffer, 2);
-
-    // Draw the scene. This function takes the shader program so that the model's textures can be bound to the right inputs
+    
     scene.draw(this._shaderProgram);
   }
 };
