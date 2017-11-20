@@ -5,10 +5,10 @@ import Scene from './scene';
 const renderer = new Renderer();
 const scene = new Scene();
 
-// camera.position.set(3, 61, 21);
-// cameraControls.target.set(0, 60, 21);
-camera.position.set(0,0,0);
-cameraControls.target.set(0,0,-1);
+camera.position.set(3, 61, 21);
+cameraControls.target.set(0, 60, 21);
+// camera.position.set(0,0,0);
+// cameraControls.target.set(0,0,-1);
 gl.enable(gl.DEPTH_TEST);
 
 function render() {

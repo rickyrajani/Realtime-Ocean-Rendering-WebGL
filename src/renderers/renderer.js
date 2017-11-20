@@ -56,8 +56,8 @@ export default class Renderer {
     scene.drawSkybox(this._shaderProgramSkybox);    
     
     // Draw the terrain and ocean
-    // gl.useProgram(this._shaderProgram.glShaderProgram);
-    // gl.uniformMatrix4fv(this._shaderProgram.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
-    // scene.draw(this._shaderProgram);
+    gl.useProgram(this._shaderProgram.glShaderProgram);
+    gl.uniformMatrix4fv(this._shaderProgram.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
+    scene.draw(this._shaderProgram);
   }
 };
