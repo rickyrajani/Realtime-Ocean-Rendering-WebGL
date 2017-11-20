@@ -10,6 +10,7 @@ export default function(params) {
   
     void main() {
       v_color = texture(skybox, v_coords);
+      // v_color = vec4(1,0,0,1);
     }
     `;
   }

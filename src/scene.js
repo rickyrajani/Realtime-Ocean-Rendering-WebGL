@@ -4,12 +4,14 @@ const OCEAN_SIZE = 100.0;
 const OCEAN_RESOLUTION = 256.0;
 const FLOAT_SIZE = 4;
 
+var texId;
+
 class Scene {
   constructor() {
     this.aCoords_Skybox;
     this.uProjection_Skybox;  
     this.uModelview_Skybox;
-    this.texID;
+    this._texID;
     this.cube;
   }
 
@@ -71,7 +73,7 @@ class Scene {
       return (total/max);
   }
 
-  cube(side) {
+  skybox(side) {
     var s = (side || 1)/2;
     var coords = [];
     var normals = [];
@@ -112,12 +114,14 @@ class Scene {
       "../img/cloudtop_ft.jpg", "../img/cloudtop_bk.jpg"
     ];
     for (var i = 0; i < 6; i++) {
+      // debugger;
         img[i] = new Image();
         img[i].onload = function() {
             count++;
             if (count == 6) {
-                this.texID = gl.createTexture();
-                gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texID);
+              // debugger;
+                texId = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_CUBE_MAP, texId);
                 var targets = [
                    gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 
                    gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 
@@ -132,37 +136,37 @@ class Scene {
                 //draw();
             }
         }
+        this._texID = texId;
         img[i].src = urls[i];
     }
   }
 
-  loadSkybox(modelData) {
+  loadSkybox(modelData, shaderProgram) {
     var model = {};
     model.coordsBuffer = gl.createBuffer();
     // model.normalBuffer = gl.createBuffer();
     model.indexBuffer = gl.createBuffer();
     model.count = modelData.indices.length;
     gl.bindBuffer(gl.ARRAY_BUFFER, model.coordsBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexPositions, gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(modelData.vertexPositions), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(shaderProgram.a_coords);
+    gl.vertexAttribPointer(shaderProgram.a_coords, 3, gl.FLOAT, false, 0, 0);
+    // gl.bindBuffer(gl.ARRAY_BUFFER, model.normalBuffer);
+    // gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexNormals, gl.STATIC_DRAW);
+    
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, modelData.indices, gl.STATIC_DRAW);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(modelData.indices), gl.STATIC_DRAW);
 
-    model.render = function(shaderProgram) {
-      gl.bindBuffer(gl.ARRAY_BUFFER, this.coordsBuffer);
-      gl.vertexAttribPointer(shaderProgram.a_coords, 3, gl.FLOAT, false, 0, 0);
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-      gl.drawElements(gl.TRIANGLES, this.count, gl.UNSIGNED_SHORT, 0);
-    }
-
-    return model;
+    gl.drawElements(gl.TRIANGLES, model.count, gl.UNSIGNED_SHORT, 0);
   }
 
   drawSkybox(shaderProgram) {
-    if(this.texID) {
-      gl.enableVertexAttribArray(this.aCoords_Skybox);
-      this.cube = this.loadSkybox(this.cube(1000));
-      this.cube.render(shaderProgram);
-      gl.disableVertexAttribArray(this.aCoords_Skybox);
+    //debugger;
+    if(this._texID) {
+      //debugger;
+      // gl.enableVertexAttribArray(this.aCoords_Skybox);
+      this.loadSkybox(this.skybox(10), shaderProgram);
+      // gl.disableVertexAttribArray(this.aCoords_Skybox);
     }
   }
 
