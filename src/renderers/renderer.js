@@ -49,20 +49,15 @@ export default class Renderer {
     // Clear the frame
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    // Upload the camera matrix to skybox shader program
-
     // Draw the skybox
     gl.useProgram(this._shaderProgramSkybox.glShaderProgram);
     gl.uniformMatrix4fv(this._shaderProgramSkybox.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
     scene.loadTexture();
     scene.drawSkybox(this._shaderProgramSkybox);    
     
-    // Upload the camera matrix
-    
-    // Draw the terrain
-    // gl.useProgram(this._shaderProgramSkybox.glShaderProgram);
-    // gl.uniformMatrix4fv(this._shaderProgramSkybox.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
-    
-    // scene.draw(this._shaderProgramSkybox);
+    // Draw the terrain and ocean
+    // gl.useProgram(this._shaderProgram.glShaderProgram);
+    // gl.uniformMatrix4fv(this._shaderProgram.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
+    // scene.draw(this._shaderProgram);
   }
 };

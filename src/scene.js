@@ -86,17 +86,17 @@ class Scene {
           coords.push(xyz[i]);
        }
        for (i = 0; i < 4; i++) {
-          normals.push(nrm[0],nrm[1],nrm[2]);
+          normals.push(nrm[0], nrm[1], nrm[2]);
        }
-       texCoords.push(0,0,1,0,1,1,0,1);
-       indices.push(start,start+1,start+2,start,start+2,start+3);
-    }
-    face( [-s,-s, s, s,-s, s, s, s, s, -s, s, s], [0,0,1] );
-    face( [-s,-s,-s, -s,s,-s, s,s,-s, s,-s,-s], [0,0,-1] );
-    face( [-s,s,-s, -s,s,s, s,s,s, s,s,-s], [0,1,0] );
-    face( [-s,-s,-s, s,-s,-s, s,-s,s, -s,-s,s], [0,-1,0] );
-    face( [s,-s,-s, s,s,-s, s,s,s, s,-s,s], [1,0,0] );
-    face( [-s,-s,-s, -s,-s,s, -s,s,s, -s,s,-s], [-1,0,0] );
+       texCoords.push(0, 0, 1, 0, 1, 1, 0, 1);
+       indices.push(start + 3, start + 2, start, start + 2, start + 1, start);       
+      }
+    face( [-s,-s, s, s,-s, s, s, s, s, -s, s, s], [0, 0, 1] );
+    face( [-s,-s,-s, -s, s,-s, s, s,-s, s,-s,-s], [0, 0, -1] );
+    face( [-s, s, -s, -s, s, s, s, s, s, s, s,-s], [0, 1, 0] );
+    face( [-s, -s, -s, s, -s, -s, s, -s, s, -s, -s, s], [0, -1, 0] );
+    face( [s, -s, -s, s, s, -s, s, s, s, s,-s, s], [1, 0, 0] );
+    face( [-s, -s, -s, -s, -s, s, -s, s, s, -s, s, -s], [-1, 0, 0] );
     return {
        vertexPositions: new Float32Array(coords),
        vertexNormals: new Float32Array(normals),
@@ -109,17 +109,15 @@ class Scene {
     var count = 0;
     var img = new Array(6);
     var urls = [
-      "../img/cloudtop_lf.jpg", "../img/cloudtop_rt.jpg", 
+      "../img/cloudtop_rt.jpg", "../img/cloudtop_lf.jpg", 
       "../img/cloudtop_up.jpg", "../img/cloudtop_dn.jpg", 
-      "../img/cloudtop_ft.jpg", "../img/cloudtop_bk.jpg"
+      "../img/cloudtop_bk.jpg", "../img/cloudtop_ft.jpg"
     ];
     for (var i = 0; i < 6; i++) {
-      // debugger;
         img[i] = new Image();
         img[i].onload = function() {
             count++;
             if (count == 6) {
-              // debugger;
                 texId = gl.createTexture();
                 gl.bindTexture(gl.TEXTURE_CUBE_MAP, texId);
                 var targets = [
@@ -133,7 +131,6 @@ class Scene {
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 }
                 gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-                //draw();
             }
         }
         this._texID = texId;
@@ -141,32 +138,23 @@ class Scene {
     }
   }
 
-  loadSkybox(modelData, shaderProgram) {
-    var model = {};
-    model.coordsBuffer = gl.createBuffer();
-    // model.normalBuffer = gl.createBuffer();
-    model.indexBuffer = gl.createBuffer();
-    model.count = modelData.indices.length;
-    gl.bindBuffer(gl.ARRAY_BUFFER, model.coordsBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(modelData.vertexPositions), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(shaderProgram.a_coords);
-    gl.vertexAttribPointer(shaderProgram.a_coords, 3, gl.FLOAT, false, 0, 0);
-    // gl.bindBuffer(gl.ARRAY_BUFFER, model.normalBuffer);
-    // gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexNormals, gl.STATIC_DRAW);
-    
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(modelData.indices), gl.STATIC_DRAW);
-
-    gl.drawElements(gl.TRIANGLES, model.count, gl.UNSIGNED_SHORT, 0);
-  }
-
   drawSkybox(shaderProgram) {
-    //debugger;
     if(this._texID) {
-      //debugger;
-      // gl.enableVertexAttribArray(this.aCoords_Skybox);
-      this.loadSkybox(this.skybox(10), shaderProgram);
-      // gl.disableVertexAttribArray(this.aCoords_Skybox);
+      var modelData = this.skybox(1000);
+      var model = {};
+      model.coordsBuffer = gl.createBuffer();
+      model.indexBuffer = gl.createBuffer();
+      model.count = modelData.indices.length;
+      
+      gl.bindBuffer(gl.ARRAY_BUFFER, model.coordsBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(modelData.vertexPositions), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(shaderProgram.a_coords);
+      gl.vertexAttribPointer(shaderProgram.a_coords, 3, gl.FLOAT, false, 0, 0);
+      
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBuffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(modelData.indices), gl.STATIC_DRAW);
+  
+      gl.drawElements(gl.TRIANGLES, model.count, gl.UNSIGNED_SHORT, 0);
     }
   }
 

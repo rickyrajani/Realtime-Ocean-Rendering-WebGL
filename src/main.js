@@ -10,7 +10,6 @@ const scene = new Scene();
 camera.position.set(0,0,0);
 cameraControls.target.set(0,0,-1);
 gl.enable(gl.DEPTH_TEST);
-// scene.loadTexture();
 
 function render() {
   scene.update();

@@ -50,7 +50,7 @@ stats.domElement.style.top = '0px';
 document.body.appendChild(stats.domElement);
 
 // Initialize camera
-export const camera = new PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 50);
+export const camera = new PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
 
 // Initialize camera controls
 export const cameraControls = new OrbitControls(camera, canvas);
