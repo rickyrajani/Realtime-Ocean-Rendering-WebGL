@@ -12,3 +12,4 @@ The system is based on two key ideas. The first is Fresnel bump mapping, which i
 ### Credits
 
 * [Skybox Images](http://www.custommapmakers.org/skyboxes.php)
+* [Skybox tutorial](http://math.hws.edu/eck/cs424/notes2013/webgl/skybox-and-reflection/skybox.html)
