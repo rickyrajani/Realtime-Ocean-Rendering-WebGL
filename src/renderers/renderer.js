@@ -12,13 +12,13 @@ import TextureBuffer from './textureBuffer';
 const NUM_LIGHTS = 0;
 
 export default class Renderer {
-  constructor() {
+  constructor(scene, noise, size) {
     // Initialize a shader program. The fragment shader source is compiled based on the number of lights
     this._shaderProgram = loadShaderProgram(vsSourceTerrain, fsSourceTerrain({
       numLights: NUM_LIGHTS,
     }), {
       uniforms: ['u_viewProjectionMatrix'],
-      attribs: ['a_position', 'a_normal', 'a_uv'],
+      attribs: ['a_position', 'a_noise'],
     });
 
     this._shaderProgramSkybox = loadShaderProgram(vsSourceSkybox, fsSourceSkybox({
@@ -31,6 +31,9 @@ export default class Renderer {
     this._projectionMatrix = mat4.create();
     this._viewMatrix = mat4.create();
     this._viewProjectionMatrix = mat4.create();
+
+    scene.createNoise(this._shaderProgram, noise);
+    scene.OCEAN_SIZE = size;
   }
 
   render(camera, scene) {

@@ -1,6 +1,3 @@
-// TODO: Change this to enable / disable debug mode
-export const DEBUG = false && process.env.NODE_ENV === 'development';
-
 import DAT from 'dat-gui';
 import WebGLDebug from 'webgl-debug';
 import Stats from 'stats-js';
@@ -20,22 +17,6 @@ export const canvas = document.getElementById('canvas');
 // Initialize the WebGL context
 const glContext = canvas.getContext('webgl2');
 export const gl = glContext;
-
-//debugger;
-
-// Get a debug context
-// export const gl = DEBUG ? WebGLDebug.makeDebugContext(glContext, (err, funcName, args) => {
-//   abort(WebGLDebug.glEnumToString(err) + ' was caused by call to: ' + funcName);
-// }) : glContext;
-
-// const supportedExtensions = gl.getSupportedExtensions();
-const requiredExtensions = [
-  'OES_texture_float',
-  'OES_texture_float_linear',
-  'OES_element_index_uint',
-  'WEBGL_depth_texture',
-  'WEBGL_draw_buffers',
-];
 
 gl.enable(gl.CULL_FACE);
 
@@ -69,11 +50,6 @@ function setSize(width, height) {
 
 setSize(canvas.clientWidth, canvas.clientHeight);
 window.addEventListener('resize', () => setSize(canvas.clientWidth, canvas.clientHeight));
-
-if (DEBUG) {
-  const spector = new Spector();
-  spector.displayUI();
-}
 
 // Creates a render loop that is wrapped with camera update and stats logging
 export function makeRenderLoop(render) {

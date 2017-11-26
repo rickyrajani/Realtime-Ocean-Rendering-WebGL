@@ -1,10 +1,11 @@
 import { gl } from './init';
 
-const OCEAN_SIZE = 100.0;
+// const OCEAN_SIZE = 100.0;
 const OCEAN_RESOLUTION = 256.0;
 const FLOAT_SIZE = 4;
 
 var texId;
+var OCEAN_SIZE = 100.0;
 
 class Scene {
   constructor() {
@@ -19,7 +20,7 @@ class Scene {
     // TODO: implement this
   }
 
-  Noise( x, y) {
+  Noise(x, y) {
       var n = parseInt(x) + parseInt(y) * 57;
       n = (n<<13) ^ n;
       var noise = parseFloat( 1 - ( (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824);
@@ -103,7 +104,7 @@ class Scene {
        vertexTextureCoords: new Float32Array(texCoords),
        indices: new Uint16Array(indices)
     }
- }
+  }
   
   loadTexture() {
     var count = 0;
@@ -158,6 +159,32 @@ class Scene {
     }
   }
 
+  createNoise(shaderProgram, amplitude) {
+    var delta = 0.1;
+    var h = 50.0;
+    
+    var noise = [];
+    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
+      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
+        var x_vert = (x * OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - OCEAN_SIZE/2.0;
+        var z_vert = (z * OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - OCEAN_SIZE/2.0;
+
+        var a = this.PerlinNoise(x_vert, z_vert, amplitude) * h;
+        var b = this.PerlinNoise(x_vert + delta, z_vert, amplitude) * h;
+        var c = this.PerlinNoise(x_vert, z_vert + delta, amplitude) * h;
+        noise.push(a);
+        noise.push(b);
+        noise.push(c);
+      }
+    }
+
+    var noiseBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, noiseBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(noise), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(shaderProgram.a_noise);
+    gl.vertexAttribPointer(shaderProgram.a_noise, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
+  }
+
   draw(shaderProgram) {
     var vertices = [];
     for (let z = 0; z < OCEAN_RESOLUTION; z++) {
@@ -178,7 +205,7 @@ class Scene {
         indices.push(UL);
         indices.push(BL);
         indices.push(BR);
-        indices.push(UL);                
+        indices.push(UL);           
         indices.push(BR);
         indices.push(UR);
       }
