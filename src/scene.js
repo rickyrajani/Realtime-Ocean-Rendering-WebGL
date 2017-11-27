@@ -5,7 +5,6 @@ const OCEAN_RESOLUTION = 256.0;
 const FLOAT_SIZE = 4;
 
 var texId;
-var OCEAN_SIZE = 100.0;
 
 class Scene {
   constructor() {
@@ -14,6 +13,7 @@ class Scene {
     this.uModelview_Skybox;
     this._texID;
     this.cube;
+    this.OCEAN_SIZE = 100.0
   }
 
   update() {
@@ -166,8 +166,8 @@ class Scene {
     var noise = [];
     for (let z = 0; z < OCEAN_RESOLUTION; z++) {
       for (let x = 0; x < OCEAN_RESOLUTION; x++) {
-        var x_vert = (x * OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - OCEAN_SIZE/2.0;
-        var z_vert = (z * OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - OCEAN_SIZE/2.0;
+        var x_vert = (x * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
+        var z_vert = (z * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
 
         var a = this.PerlinNoise(x_vert, z_vert, amplitude) * h;
         var b = this.PerlinNoise(x_vert + delta, z_vert, amplitude) * h;
@@ -189,9 +189,9 @@ class Scene {
     var vertices = [];
     for (let z = 0; z < OCEAN_RESOLUTION; z++) {
       for (let x = 0; x < OCEAN_RESOLUTION; x++) {
-        vertices.push((x * OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - OCEAN_SIZE/2.0);
+        vertices.push((x * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
         vertices.push(0.0);
-        vertices.push((z * OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - OCEAN_SIZE/2.0);
+        vertices.push((z * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
       }
     }
 

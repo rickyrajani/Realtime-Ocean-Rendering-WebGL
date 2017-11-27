@@ -32,8 +32,8 @@ export default class Renderer {
     this._viewMatrix = mat4.create();
     this._viewProjectionMatrix = mat4.create();
 
-    scene.createNoise(this._shaderProgram, noise);
     scene.OCEAN_SIZE = size;
+    scene.createNoise(this._shaderProgram, noise);
   }
 
   render(camera, scene) {
