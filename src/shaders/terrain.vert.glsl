@@ -3,6 +3,8 @@ precision highp float;
 
 uniform mat4 u_viewProjectionMatrix;
 
+uniform float u_noise;
+
 in vec3 a_position;
 in vec3 a_noise;
 
@@ -64,7 +66,7 @@ float PerlinNoise(float x, float y, float c) {
 }
 
 void main() {
-    float amplitude = 0.25;
+    float amplitude = u_noise;
     float y = PerlinNoise(a_position.x, a_position.z, amplitude) * 50.0;
     vec3 a = a_position;
 

@@ -196,8 +196,8 @@ class Scene {
     }
 
     var indices = [];
-    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
-      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
+    for (let z = 0; z < OCEAN_RESOLUTION - 1; z++) {
+      for (let x = 0; x < OCEAN_RESOLUTION - 1; x++) {
         let UL = z * OCEAN_RESOLUTION + x;
         let UR = UL + 1;
         let BL = UL + OCEAN_RESOLUTION;
@@ -205,9 +205,10 @@ class Scene {
         indices.push(UL);
         indices.push(BL);
         indices.push(BR);
-        indices.push(UL);           
         indices.push(BR);
-        indices.push(UR);
+        indices.push(UR);                
+        indices.push(UL);           
+        
       }
     }
     

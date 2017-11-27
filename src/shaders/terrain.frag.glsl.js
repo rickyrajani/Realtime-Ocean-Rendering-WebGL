@@ -9,15 +9,19 @@ export default function(params) {
   
     void main() {
       vec3 albedo = vec3(107.0/255.0, 180.0/255.0, 69.0/255.0);
+      vec3 normal = v_normal;
+      vec3 pos = v_position;
+      
       if (v_position.y <= 55.0) {
         albedo = vec3(25.0/255.0, 140.0/255.0 , 190.0/255.0);
+        normal = vec3(0,1,0);
+        pos.y = 55.0;
       }
-      vec3 normal = v_normal;
   
       vec3 fragColor = vec3(0.0);
   
       vec3 sunLight = vec3(1, 75, -5);
-      vec3 lightDir = normalize(sunLight - v_position);
+      vec3 lightDir = normalize(sunLight - pos);
       float NdotL = clamp(dot(normal, lightDir), 0.1, 1.0);
       fragColor += albedo * NdotL;
   
