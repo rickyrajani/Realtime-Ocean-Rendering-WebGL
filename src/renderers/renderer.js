@@ -35,7 +35,9 @@ export default class Renderer {
     this._noise = noise;
 
     scene.OCEAN_SIZE = size;
+    gl.useProgram(this._shaderProgram.glShaderProgram);
     // scene.createNoise(this._shaderProgram, noise);
+    scene.createBuffers();
   }
 
   render(camera, scene) {
@@ -58,7 +60,7 @@ export default class Renderer {
     gl.useProgram(this._shaderProgramSkybox.glShaderProgram);
     gl.uniformMatrix4fv(this._shaderProgramSkybox.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
     scene.loadTexture();
-    scene.drawSkybox(this._shaderProgramSkybox);
+    // scene.drawSkybox(this._shaderProgramSkybox);
     
     // Draw the terrain and ocean
     gl.useProgram(this._shaderProgram.glShaderProgram);

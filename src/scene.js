@@ -14,10 +14,38 @@ class Scene {
     this._texID;
     this.cube;
     this.OCEAN_SIZE = 100.0
+    this.vertices = [];
+    this.indices = [];
   }
 
   update() {
     // TODO: implement this
+  }
+  
+  createBuffers() {
+    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
+      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
+        this.vertices.push((x * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
+        this.vertices.push(0.0);
+        this.vertices.push((z * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
+      }
+    }
+
+    for (let z = 0; z < OCEAN_RESOLUTION - 1; z++) {
+      for (let x = 0; x < OCEAN_RESOLUTION - 1; x++) {
+        let UL = z * OCEAN_RESOLUTION + x;
+        let UR = UL + 1;
+        let BL = UL + OCEAN_RESOLUTION;
+        let BR = BL + 1;
+        this.indices.push(UL);
+        this.indices.push(BL);
+        this.indices.push(BR);
+        this.indices.push(BR);
+        this.indices.push(UR);                
+        this.indices.push(UL);
+      }
+    }
+
   }
 
   Noise(x, y) {
@@ -186,47 +214,21 @@ class Scene {
   }
 
   draw(shaderProgram) {
-    var vertices = [];
-    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
-      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
-        vertices.push((x * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
-        vertices.push(0.0);
-        vertices.push((z * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
-      }
-    }
-
-    var indices = [];
-    for (let z = 0; z < OCEAN_RESOLUTION - 1; z++) {
-      for (let x = 0; x < OCEAN_RESOLUTION - 1; x++) {
-        let UL = z * OCEAN_RESOLUTION + x;
-        let UR = UL + 1;
-        let BL = UL + OCEAN_RESOLUTION;
-        let BR = BL + 1;
-        indices.push(UL);
-        indices.push(BL);
-        indices.push(BR);
-        indices.push(BR);
-        indices.push(UR);                
-        indices.push(UL);           
-        
-      }
-    }
-    
     // Ocean water plane
     var vertexBuffer = gl.createBuffer();
     var indicesBuffer = gl.createBuffer();
 
     // Bind ocean vertex positions
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(shaderProgram.a_position);
     gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
 
     // Bind ocean vertex indices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-   
-    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+
+    gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
 
   }
 
