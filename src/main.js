@@ -16,8 +16,7 @@ const params = {
   _renderer: null,
 };
 
-setPerlinNoise(params.noise);
-setOceanSize(params.size);
+params._renderer = new Renderer(scene, params.noise, params.size);
 
 function setPerlinNoise(noise) {
   params.noise = noise;

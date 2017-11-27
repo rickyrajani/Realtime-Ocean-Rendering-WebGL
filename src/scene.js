@@ -1,6 +1,5 @@
 import { gl } from './init';
 
-// const OCEAN_SIZE = 100.0;
 const OCEAN_RESOLUTION = 256.0;
 const FLOAT_SIZE = 4;
 
@@ -23,6 +22,7 @@ class Scene {
   }
   
   createBuffers() {
+    this.vertices = [];
     for (let z = 0; z < OCEAN_RESOLUTION; z++) {
       for (let x = 0; x < OCEAN_RESOLUTION; x++) {
         this.vertices.push((x * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
@@ -31,6 +31,7 @@ class Scene {
       }
     }
 
+    this.indices = [];
     for (let z = 0; z < OCEAN_RESOLUTION - 1; z++) {
       for (let x = 0; x < OCEAN_RESOLUTION - 1; x++) {
         let UL = z * OCEAN_RESOLUTION + x;
@@ -45,7 +46,6 @@ class Scene {
         this.indices.push(UL);
       }
     }
-
   }
 
   Noise(x, y) {
@@ -229,7 +229,6 @@ class Scene {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
     gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
-
   }
 
 }
