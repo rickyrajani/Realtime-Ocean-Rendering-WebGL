@@ -66,12 +66,38 @@ class Scene {
       var max = 1.4;
 
       for (let i = 0; i < n; i++) {
-          var frequency = Math.pow(2.0, parseFloat(i));
-          var amplitude = Math.pow(p, parseFloat(i));
+          let frequency = Math.pow(2.0, parseFloat(i));
+          let amplitude = Math.pow(p, parseFloat(i));
 
           total = total + this.InterpolateNoise(parseFloat(x) * frequency, parseFloat(y) * frequency) * amplitude;
       }
       return (total/max);
+  }
+
+  createNoise(shaderProgram, amplitude) {
+    var delta = 0.1;
+    var h = 50.0;
+    
+    var noise = [];
+    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
+      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
+        var x_vert = (x * this.OCEAN_SIZE) / (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
+        var z_vert = (z * this.OCEAN_SIZE) / (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
+
+        var a = this.PerlinNoise(x_vert, z_vert, amplitude) * h;
+        var b = this.PerlinNoise(x_vert + delta, z_vert, amplitude) * h;
+        var c = this.PerlinNoise(x_vert, z_vert + delta, amplitude) * h;
+        noise.push(a);
+        noise.push(b);
+        noise.push(c);
+      }
+    }
+
+    var noiseBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, noiseBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(noise), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(shaderProgram.a_noise);
+    gl.vertexAttribPointer(shaderProgram.a_noise, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
   }
 
   skybox(side) {
@@ -157,32 +183,6 @@ class Scene {
   
       gl.drawElements(gl.TRIANGLES, model.count, gl.UNSIGNED_SHORT, 0);
     }
-  }
-
-  createNoise(shaderProgram, amplitude) {
-    var delta = 0.1;
-    var h = 50.0;
-    
-    var noise = [];
-    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
-      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
-        var x_vert = (x * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
-        var z_vert = (z * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
-
-        var a = this.PerlinNoise(x_vert, z_vert, amplitude) * h;
-        var b = this.PerlinNoise(x_vert + delta, z_vert, amplitude) * h;
-        var c = this.PerlinNoise(x_vert, z_vert + delta, amplitude) * h;
-        noise.push(a);
-        noise.push(b);
-        noise.push(c);
-      }
-    }
-
-    var noiseBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, noiseBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(noise), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(shaderProgram.a_noise);
-    gl.vertexAttribPointer(shaderProgram.a_noise, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
   }
 
   draw(shaderProgram) {
