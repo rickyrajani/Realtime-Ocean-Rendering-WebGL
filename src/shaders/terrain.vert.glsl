@@ -68,10 +68,11 @@ float PerlinNoise(float x, float y, float c) {
 void main() {
     float amplitude = u_noise;
     float y = PerlinNoise(a_position.x, a_position.z, amplitude) * 50.0;
+    //float y = a_noise.x;
     vec3 a = a_position;
 
-    if (y < 35.0) {
-        y = 35.0;	
+    if (y <= 55.0) {
+        y = 55.0;	
         v_normal = vec3(0.0,1.0,0.0);
         a.y = y;
     } else {
@@ -79,9 +80,11 @@ void main() {
         a.y = y;		
         vec3 b = vec3(a_position.x + delta, a_position.y, a_position.z);
         b.y = PerlinNoise(b.x, b.z, amplitude) * 50.0;		
+        // b.y = a_noise.y;
         vec3 c = vec3(a_position.x, a_position.y, a_position.z + delta);		
         c.y = PerlinNoise(c.x, c.z, amplitude) * 50.0;		
-        		
+        // c.y = a_noise.z;
+
         vec3 dir = normalize(cross((b - a), (c - a)));		
         v_normal = dir;		
     }

@@ -15,6 +15,7 @@ class Scene {
     this.OCEAN_SIZE = 100.0
     this.vertices = [];
     this.indices = [];
+    this.noise = [];
   }
 
   update() {
@@ -106,7 +107,7 @@ class Scene {
     var delta = 0.1;
     var h = 50.0;
     
-    var noise = [];
+    this.noise = [];
     for (let z = 0; z < OCEAN_RESOLUTION; z++) {
       for (let x = 0; x < OCEAN_RESOLUTION; x++) {
         var x_vert = (x * this.OCEAN_SIZE) / (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
@@ -115,17 +116,11 @@ class Scene {
         var a = this.PerlinNoise(x_vert, z_vert, amplitude) * h;
         var b = this.PerlinNoise(x_vert + delta, z_vert, amplitude) * h;
         var c = this.PerlinNoise(x_vert, z_vert + delta, amplitude) * h;
-        noise.push(a);
-        noise.push(b);
-        noise.push(c);
+        this.noise.push(a);
+        this.noise.push(b);
+        this.noise.push(c);
       }
     }
-
-    var noiseBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, noiseBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(noise), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(shaderProgram.a_noise);
-    gl.vertexAttribPointer(shaderProgram.a_noise, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
   }
 
   skybox(side) {
@@ -227,6 +222,12 @@ class Scene {
     // Bind ocean vertex indices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+
+    var noiseBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, noiseBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.noise), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(shaderProgram.a_noise);
+    gl.vertexAttribPointer(shaderProgram.a_noise, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);
 
     gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
   }

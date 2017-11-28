@@ -28,8 +28,8 @@ function setOceanSize(size) {
   params._renderer = new Renderer(scene, params.noise, params.size);
 }
 
-gui.add(params, 'noise', [0.15, 0.25, 0.35, 0.50, 0.75]).onChange(setPerlinNoise);
-gui.add(params, 'size', [10, 100, 500, 1000]).onChange(setOceanSize);
+gui.add(params, 'noise', 0.0, 1.0).onChange(setPerlinNoise);
+gui.add(params, 'size', 1, 1000).onChange(setOceanSize);
 
 function render() {
   scene.update();
