@@ -1,15 +1,45 @@
 #version 300 es
 precision highp float;
 
+
+const float PI = 3.14159265359;
+const float g = 9.81;
+const vec2 wind = vec2(1.0,1.0);
+
 uniform mat4 u_viewProjectionMatrix;
 
 uniform float u_noise;
+
+uniform float u_time;
+uniform float u_L;
+uniform int u_resolution;
+uniform float u_V;
 
 in vec3 a_position;
 in vec3 a_noise;
 
 out vec3 v_position;
 out vec3 v_normal;
+
+
+// taken from http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+highp float rand(vec2 co)
+{
+    highp float a = 12.9898;
+    highp float b = 78.233;
+    highp float c = 43758.5453;
+    highp float dt= dot(co.xy ,vec2(a,b));
+    highp float sn= mod(dt,3.14);
+    return fract(sin(sn) * c);
+}
+
+vec2 complexExp(float x) {
+    return vec2(cos(x), sin(x));
+}
+
+vec2 complexProduct(vec2 a, vec2 b) {
+    return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
+}
 
 float Noise(float x, float y) {
     int n = int(x) + int(y) * 57;
@@ -65,6 +95,42 @@ float PerlinNoise(float x, float y, float c) {
     return (total/max);
 }
 
+vec2 getH_0 (vec2 k, float P) {
+    float rand1 = rand(vec2(k.x, k.y));
+    float rand2 = rand(vec2(k.y * rand1, k.x));
+    return vec2( 1.0 / pow (2.0, 0.5) * rand1 * sqrt(P), 1.0 / sqrt(2.0) * rand2 * pow(P, 0.5));
+}
+
+float getHeightField(vec3 pos) {
+    float n = pos.x;
+    float m = pos.z;
+    vec2 k = vec2(2.0 * PI * n / u_L, 2.0 * PI * m / u_L);
+
+    // numeric constant
+    float A = 0.0000001;
+
+    // largest possible waves arising from a continuous wind of speed
+    float L = 1.0 * 1.0 / g;
+
+    float cosP = length(dot (normalize(k), normalize(wind)));
+    float temp = length(k) * L;
+    float P = A * exp( -1.0 / (temp*temp)) * pow(length(k), 4.0) * cosP * cosP;
+
+    vec2 h_0 = getH_0(k, P);
+    vec2 h_0_star = getH_0(-k, P);
+
+    float w = sqrt(g * length(k));
+
+    vec2 h_01 = complexProduct(h_0, complexExp( w * u_time));
+    vec2 h_0_star1 = complexProduct(h_0_star, complexExp(-w * u_time));
+
+    vec2 h_t = h_01 + h_0_star1;
+
+    vec2 h_x_t = complexProduct(h_t, complexExp(dot(k, vec2(n,m))));
+
+    return h_x_t.x;
+}
+
 void main() {
     float amplitude = u_noise;
     float y = PerlinNoise(a_position.x, a_position.z, amplitude) * 50.0;
@@ -72,7 +138,7 @@ void main() {
     vec3 a = a_position;
 
     if (y <= 55.0) {
-        y = 55.0;	
+        y = getHeightField(a) + 50.0;	
         v_normal = vec3(0.0,1.0,0.0);
         a.y = y;
     } else {

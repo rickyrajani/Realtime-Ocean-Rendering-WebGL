@@ -17,7 +17,7 @@ export default class Renderer {
     this._shaderProgram = loadShaderProgram(vsSourceTerrain, fsSourceTerrain({
       numLights: NUM_LIGHTS,
     }), {
-      uniforms: ['u_viewProjectionMatrix', 'u_noise'],
+      uniforms: ['u_viewProjectionMatrix', 'u_noise', 'u_time', 'u_L', 'u_resolution'],
       attribs: ['a_position', 'a_noise'],
     });
 
@@ -65,6 +65,9 @@ export default class Renderer {
     gl.useProgram(this._shaderProgram.glShaderProgram);
     gl.uniformMatrix4fv(this._shaderProgram.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
     gl.uniform1f(this._shaderProgram.u_noise, this._noise);
+    gl.uniform1f(this._shaderProgram.u_time, scene.time);
+    gl.uniform1f(this._shaderProgram.u_L, scene.OCEAN_SIZE);
+    gl.uniform1i(this._shaderProgram.u_resolution, scene.OCEAN_RESOLUTION);
     scene.draw(this._shaderProgram);
   }
 };

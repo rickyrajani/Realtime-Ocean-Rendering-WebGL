@@ -1,6 +1,5 @@
 import { gl } from './init';
 
-const OCEAN_RESOLUTION = 256.0;
 const FLOAT_SIZE = 4;
 
 var texId;
@@ -16,28 +15,31 @@ class Scene {
     this.vertices = [];
     this.indices = [];
     this.noise = [];
+    this.time = 0;
+    this.OCEAN_RESOLUTION = 256.0;
   }
 
   update() {
     // TODO: implement this
+    this.time += 1;
   }
   
   createBuffers() {
     this.vertices = [];
-    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
-      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
-        this.vertices.push((x * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
+    for (let z = 0; z < this.OCEAN_RESOLUTION; z++) {
+      for (let x = 0; x < this.OCEAN_RESOLUTION; x++) {
+        this.vertices.push((x * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
         this.vertices.push(0.0);
-        this.vertices.push((z * this.OCEAN_SIZE)/ (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
+        this.vertices.push((z * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
       }
     }
 
     this.indices = [];
-    for (let z = 0; z < OCEAN_RESOLUTION - 1; z++) {
-      for (let x = 0; x < OCEAN_RESOLUTION - 1; x++) {
-        let UL = z * OCEAN_RESOLUTION + x;
+    for (let z = 0; z < this.OCEAN_RESOLUTION - 1; z++) {
+      for (let x = 0; x < this.OCEAN_RESOLUTION - 1; x++) {
+        let UL = z * this.OCEAN_RESOLUTION + x;
         let UR = UL + 1;
-        let BL = UL + OCEAN_RESOLUTION;
+        let BL = UL + this.OCEAN_RESOLUTION;
         let BR = BL + 1;
         this.indices.push(UL);
         this.indices.push(BL);
@@ -108,10 +110,10 @@ class Scene {
     var h = 50.0;
     
     this.noise = [];
-    for (let z = 0; z < OCEAN_RESOLUTION; z++) {
-      for (let x = 0; x < OCEAN_RESOLUTION; x++) {
-        var x_vert = (x * this.OCEAN_SIZE) / (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
-        var z_vert = (z * this.OCEAN_SIZE) / (OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
+    for (let z = 0; z < this.OCEAN_RESOLUTION; z++) {
+      for (let x = 0; x < this.OCEAN_RESOLUTION; x++) {
+        var x_vert = (x * this.OCEAN_SIZE) / (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
+        var z_vert = (z * this.OCEAN_SIZE) / (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
 
         var a = this.PerlinNoise(x_vert, z_vert, amplitude) * h;
         var b = this.PerlinNoise(x_vert + delta, z_vert, amplitude) * h;
@@ -223,11 +225,11 @@ class Scene {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
 
-    var noiseBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, noiseBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.noise), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(shaderProgram.a_noise);
-    gl.vertexAttribPointer(shaderProgram.a_noise, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);
+    // var noiseBuffer = gl.createBuffer();
+    // gl.bindBuffer(gl.ARRAY_BUFFER, noiseBuffer);
+    // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.noise), gl.STATIC_DRAW);
+    // gl.enableVertexAttribArray(shaderProgram.a_noise);
+    // gl.vertexAttribPointer(shaderProgram.a_noise, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);
 
     gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
   }
