@@ -16,7 +16,7 @@ class Scene {
     this.indices = [];
     this.noise = [];
     this.time = 0;
-    this.OCEAN_RESOLUTION = 256.0;
+    this.OCEAN_RESOLUTION = 128.0;
   }
 
   update() {

@@ -65,7 +65,7 @@ export default class Renderer {
     gl.useProgram(this._shaderProgram.glShaderProgram);
     gl.uniformMatrix4fv(this._shaderProgram.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
     gl.uniform1f(this._shaderProgram.u_noise, this._noise);
-    gl.uniform1f(this._shaderProgram.u_time, scene.time);
+    gl.uniform1f(this._shaderProgram.u_time, scene.time * .01);
     gl.uniform1f(this._shaderProgram.u_L, scene.OCEAN_SIZE);
     gl.uniform1i(this._shaderProgram.u_resolution, scene.OCEAN_RESOLUTION);
     scene.draw(this._shaderProgram);
