@@ -17,7 +17,7 @@ export default class Renderer {
     this._shaderProgram = loadShaderProgram(vsSourceTerrain, fsSourceTerrain({
       numLights: NUM_LIGHTS,
     }), {
-      uniforms: ['u_viewProjectionMatrix', 'u_noise', 'u_time', 'u_L', 'u_resolution'],
+      uniforms: ['u_viewProjectionMatrix', 'u_noise', 'u_time', 'u_L', 'u_resolution', 'u_V'],
       attribs: ['a_position', 'a_noise'],
     });
 
