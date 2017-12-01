@@ -1,24 +1,32 @@
 import { gl } from '../init';
-import { mat4, vec4 } from 'gl-matrix';
+import { mat3, mat4, vec4 } from 'gl-matrix';
 import { loadShaderProgram } from '../utils';
-import vsSource from '../shaders/ocean.vert.glsl';
-import fsSource from '../shaders/ocean.frag.glsl.js';
+import vsSourceOcean from '../shaders/ocean.vert.glsl';
+import fsSourceOcean from '../shaders/ocean.frag.glsl.js';
 import vsSourceTerrain from '../shaders/terrain.vert.glsl';
 import fsSourceTerrain from '../shaders/terrain.frag.glsl.js';
 import vsSourceSkybox from '../shaders/skybox.vert.glsl';
 import fsSourceSkybox from '../shaders/skybox.frag.glsl.js';
 import TextureBuffer from './textureBuffer';
+import { Matrix3 } from 'three';
 
 const NUM_LIGHTS = 0;
 
 export default class Renderer {
   constructor(scene, noise, size) {
     // Initialize a shader program. The fragment shader source is compiled based on the number of lights
-    this._shaderProgram = loadShaderProgram(vsSourceTerrain, fsSourceTerrain({
+    this._shaderProgramTerrain = loadShaderProgram(vsSourceTerrain, fsSourceTerrain({
       numLights: NUM_LIGHTS,
     }), {
-      uniforms: ['u_viewProjectionMatrix', 'u_noise', 'u_time', 'u_L', 'u_resolution', 'u_V'],
-      attribs: ['a_position', 'a_noise'],
+      uniforms: ['u_viewProjectionMatrix', 'u_noise'],
+      attribs: ['a_position'],
+    });
+
+    this._shaderProgramOcean = loadShaderProgram(vsSourceOcean, fsSourceOcean({
+      numLights: NUM_LIGHTS,
+    }), {
+      uniforms: ['u_viewProjectionMatrix', 'u_viewMatrix', 'u_noise', 'u_time', 'u_L', 'u_resolution', 'u_V'],
+      attribs: ['a_position'],
     });
 
     this._shaderProgramSkybox = loadShaderProgram(vsSourceSkybox, fsSourceSkybox({
@@ -45,6 +53,14 @@ export default class Renderer {
     mat4.invert(this._viewMatrix, camera.matrixWorld.elements);
     mat4.copy(this._projectionMatrix, camera.projectionMatrix.elements);
     mat4.multiply(this._viewProjectionMatrix, this._projectionMatrix, this._viewMatrix);
+    
+    // Matricesfor reflection
+    var normalMat = mat3.create();
+    mat3.normalFromMat4(normalMat, this._viewMatrix);
+    
+    var invViewTrans = mat3.create();
+    mat3.fromMat4(invViewTrans, this._viewMatrix);
+    mat3.invert(invViewTrans, invViewTrans);
 
     // Bind the default null framebuffer which is the screen
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -60,14 +76,24 @@ export default class Renderer {
     gl.uniformMatrix4fv(this._shaderProgramSkybox.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
     scene.loadTexture();
     scene.drawSkybox(this._shaderProgramSkybox);
+
+    // Draw the terrain
+    gl.useProgram(this._shaderProgramTerrain.glShaderProgram);
+    gl.uniformMatrix4fv(this._shaderProgramTerrain.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
+    gl.uniform1f(this._shaderProgramTerrain.u_noise, this._noise);
+    scene.draw(this._shaderProgramTerrain);
     
-    // Draw the terrain and ocean
-    gl.useProgram(this._shaderProgram.glShaderProgram);
-    gl.uniformMatrix4fv(this._shaderProgram.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
-    gl.uniform1f(this._shaderProgram.u_noise, this._noise);
-    gl.uniform1f(this._shaderProgram.u_time, scene.time * .01);
-    gl.uniform1f(this._shaderProgram.u_L, scene.OCEAN_SIZE);
-    gl.uniform1i(this._shaderProgram.u_resolution, scene.OCEAN_RESOLUTION);
-    scene.draw(this._shaderProgram);
+    // Draw the ocean
+    gl.useProgram(this._shaderProgramOcean.glShaderProgram);
+    gl.uniformMatrix4fv(this._shaderProgramOcean.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
+    gl.uniformMatrix4fv(this._shaderProgramOcean.u_viewMatrix, false, this._viewMatrix);
+    gl.uniformMatrix3fv(this._shaderProgramOcean.u_normalMatrix, false, normalMat);
+    gl.uniformMatrix3fv(this._shaderProgramOcean.u_invVT, false, invViewTrans);    
+    gl.uniform1f(this._shaderProgramOcean.u_time, scene.time * .01);
+    gl.uniform1f(this._shaderProgramOcean.u_L, scene.OCEAN_SIZE);
+    gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_RESOLUTION);
+    scene.loadTexture();
+    scene.drawSkybox(this._shaderProgramOcean);
+    scene.draw(this._shaderProgramOcean);
   }
 };
