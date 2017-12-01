@@ -16,7 +16,7 @@ export default function(params) {
 
   void main() {
     // vec3 albedo = vec3(25.0/255.0, 140.0/255.0 , 190.0/255.0);    
-    vec3 albedo = vec3(1.0, 1.0, 1.0);
+    vec3 albedo = vec3(0.6, 0.6, 0.6);
     vec3 normal = v_normal;
     vec3 pos = v_position;
     
@@ -40,7 +40,16 @@ export default function(params) {
     // v_color = vec4(fragColor, 1.0);
     // v_color = vec4(normal, 1.0);
 
-    fragColor += vec3(texture(skybox, v_R));
+    vec3 darkBlue = vec3(39.0/255.0, 41.0/255.0, 145.0/255.0);
+
+    // Refraction
+    float rIndex = 1.5;
+    float R_0 = pow((1.0 - rIndex) / (1.0 + rIndex), 2.0); // Reflective index
+	  float dot = abs(dot(normal, lightDir));
+    float fresnel = R_0 + (1.0 - R_0) * pow(1.0 - dot, 5.0);
+    
+
+    fragColor += (fresnel + 0.1) * vec3(texture(skybox, v_R)) + (1.0 - fresnel) * darkBlue;
 
     v_color = vec4(fragColor, 1.0);
   }
