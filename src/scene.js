@@ -161,9 +161,9 @@ class Scene {
     var count = 0;
     var img = new Array(6);
     var urls = [
-      "../img/cloudtop_rt.jpg", "../img/cloudtop_lf.jpg", 
-      "../img/cloudtop_up.jpg", "../img/cloudtop_dn.jpg", 
-      "../img/cloudtop_bk.jpg", "../img/cloudtop_ft.jpg"
+      "../img/stormydays_rt.jpg", "../img/stormydays_lf.jpg", 
+      "../img/stormydays_up.jpg", "../img/stormydays_dn.jpg", 
+      "../img/stormydays_bk.jpg", "../img/stormydays_ft.jpg"
     ];
     for (var i = 0; i < 6; i++) {
         img[i] = new Image();
@@ -212,7 +212,6 @@ class Scene {
 
   draw(shaderProgram) {
       if (this._texID) {
-        // debugger;
       // Ocean water plane
       var vertexBuffer = gl.createBuffer();
       var indicesBuffer = gl.createBuffer();

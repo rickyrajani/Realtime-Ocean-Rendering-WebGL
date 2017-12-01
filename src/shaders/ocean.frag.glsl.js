@@ -5,6 +5,7 @@ export default function(params) {
   in vec3 v_position;
   in vec3 v_normal;
   in vec3 v_viewCoords;
+  in vec3 v_R;
 
   out vec4 v_color;
 
@@ -29,12 +30,15 @@ export default function(params) {
     // v_color = vec4(fragColor, 1.0);
     // v_color = vec4(normal, 1.0);
 
-    vec3 N = u_normalMatrix * v_normal;
+    /*
+    vec3 N = v_normal;
     vec3 V = - v_viewCoords;
     vec3 R = 2.0 * dot(V, N) * N - V;
-    R = u_invVT * R;
-    v_color = texture(skybox, v_position);
+    R = u_invVT * R; */
 
+    v_color = texture(skybox, v_R);
+
+    
   }
   `;
 }

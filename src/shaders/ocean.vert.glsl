@@ -19,6 +19,7 @@ in vec3 a_position;
 out vec3 v_position;
 out vec3 v_normal;
 out vec3 v_viewCoords; // Position in model view space
+out vec3 v_R;
 
 
 // taken from http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
@@ -101,6 +102,11 @@ void main() {
     gl_Position = u_viewProjectionMatrix * vec4(a, 1.0);
 
     // For reflection
-    vec4 eyeCoords = u_viewMatrix * vec4(a, 1.0);
-    v_viewCoords = eyeCoords.xyz;
+    // vec4 eyeCoords = u_viewMatrix * vec4(a, 1.0);
+    // v_viewCoords = eyeCoords.xyz;
+
+    vec4 eyePos = vec4(a, 1.0);
+    vec4 NN = u_viewMatrix * vec4(v_normal,1.0);
+    vec3 N = normalize(NN.xyz);
+    v_R = reflect(eyePos.xyz, N);
 }

@@ -93,7 +93,7 @@ export default class Renderer {
     gl.uniform1f(this._shaderProgramOcean.u_L, scene.OCEAN_SIZE);
     gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_RESOLUTION);
     scene.loadTexture();
-    scene.drawSkybox(this._shaderProgramOcean);
+    // scene.drawSkybox(this._shaderProgramOcean);
     scene.draw(this._shaderProgramOcean);
   }
 };
