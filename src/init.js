@@ -15,7 +15,9 @@ export function abort(message) {
 export const canvas = document.getElementById('canvas');
 
 // Initialize the WebGL context
-const glContext = canvas.getContext('webgl2');
+const glContext = canvas.getContext("webgl2", {
+  premultipliedAlpha: false  // Ask for non-premultiplied alpha
+});
 export const gl = glContext;
 
 gl.enable(gl.CULL_FACE);
@@ -31,7 +33,7 @@ stats.domElement.style.top = '0px';
 document.body.appendChild(stats.domElement);
 
 // Initialize camera
-export const camera = new PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
+export const camera = new PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 5000);
 
 // Initialize camera controls
 export const cameraControls = new OrbitControls(camera, canvas);

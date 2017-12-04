@@ -13,6 +13,7 @@ uniform float u_time;
 uniform float u_L;
 uniform int u_resolution;
 uniform float u_V;
+uniform vec3 u_cameraPos;
 
 in vec3 a_position;
 
@@ -54,7 +55,7 @@ float getHeightField(vec3 pos) {
     float lengthK = length(k);
 
     // numeric constant
-    float A = 0.01;
+    float A = 0.001;
 
     // largest possible waves arising from a continuous wind of speed
     float V = 10.0;
@@ -105,8 +106,8 @@ void main() {
     // vec4 eyeCoords = u_viewMatrix * vec4(a, 1.0);
     // v_viewCoords = eyeCoords.xyz;
 
-    vec4 eyePos = vec4(a, 1.0);
-    vec4 NN = u_viewMatrix * vec4(v_normal,1.0);
+    vec3 eyePos = normalize(a - u_cameraPos);
+    vec4 NN = u_viewMatrix * vec4(v_normal, 1.0);
     vec3 N = normalize(NN.xyz);
-    v_R = reflect(eyePos.xyz, N);
+    v_R = reflect(eyePos, v_normal);
 }

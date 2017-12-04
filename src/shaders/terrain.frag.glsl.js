@@ -6,7 +6,7 @@ export default function(params) {
     in vec3 v_normal;
 
     out vec4 v_color;
-  
+
     void main() {
       // vec3 albedo = vec3(107.0/255.0, 180.0/255.0, 69.0/255.0);
       vec3 albedo = vec3(1.0, 1.0, 1.0);
@@ -15,8 +15,7 @@ export default function(params) {
   
       vec3 fragColor = vec3(0.0);
   
-      vec3 sunLight = vec3(1, 75, -5);
-      vec3 lightDir = normalize(sunLight - pos);
+      vec3 lightDir = normalize(vec3(1, 50, -5) - pos);
       float NdotL = clamp(dot(normal, lightDir), 0.1, 1.0);
       fragColor += albedo * NdotL;
   

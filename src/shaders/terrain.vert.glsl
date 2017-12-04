@@ -52,7 +52,7 @@ float PerlinNoise(float x, float y, float c) {
     float total = 0.0;
     float p = 0.5;
     // number of octaves
-    int n = 8;
+    int n = 6;
     float max = 1.4;
 
     for (int i = 0; i < n; i++) {
@@ -66,15 +66,15 @@ float PerlinNoise(float x, float y, float c) {
 
 void main() {
     float amplitude = u_noise;
-    float y = PerlinNoise(a_position.x, a_position.z, amplitude) * 50.0;
+    float y = PerlinNoise(a_position.x, a_position.z, amplitude) * 20.0 + 32.0;
     vec3 a = a_position;
 
     float delta = 0.1;
     a.y = y;		
     vec3 b = vec3(a_position.x + delta, a_position.y, a_position.z);
-    b.y = PerlinNoise(b.x, b.z, amplitude) * 50.0;		
+    b.y = PerlinNoise(b.x, b.z, amplitude) * 20.0 + 32.0;		
     vec3 c = vec3(a_position.x, a_position.y, a_position.z + delta);		
-    c.y = PerlinNoise(c.x, c.z, amplitude) * 50.0;		
+    c.y = PerlinNoise(c.x, c.z, amplitude) * 20.0 + 32.0;		
 
     vec3 dir = normalize(cross((b - a), (c - a)));
     v_normal = dir;
