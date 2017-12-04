@@ -10,10 +10,7 @@ export default function(params) {
   out vec4 v_color;
 
   uniform samplerCube skybox;
-  uniform mat3 u_normalMatrix;
-  uniform mat3 u_invVT;
   uniform mat4 u_viewMatrix;
-  uniform vec3 u_sunLight;
 
   void main() {
     vec3 albedo = vec3(0.6, 0.6, 0.6);

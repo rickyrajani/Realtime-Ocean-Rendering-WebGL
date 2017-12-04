@@ -11,7 +11,7 @@ class Scene {
     this.uModelview_Skybox;
     this._texID;
     this.cube;
-    this.OCEAN_SIZE = 200.0
+    this.OCEAN_SIZE = 200.0;
     this.vertices = [];
     this.indices = [];
     this.noise = [];
@@ -20,7 +20,6 @@ class Scene {
   }
 
   update() {
-    // TODO: implement this
     this.time += 1;
   }
   

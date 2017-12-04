@@ -4,24 +4,23 @@ precision highp float;
 
 const float PI = 3.14159265359;
 const float g = 9.81;
-const vec2 wind = vec2(1.0,1.0);
+const vec2 wind = vec2(1.0, 1.0);
 
 uniform mat4 u_viewProjectionMatrix;
 uniform mat4 u_viewMatrix;
 
 uniform float u_time;
 uniform float u_L;
-uniform int u_resolution;
+uniform float u_A;
 uniform float u_V;
+uniform int u_resolution;
 uniform vec3 u_cameraPos;
 
 in vec3 a_position;
 
 out vec3 v_position;
 out vec3 v_normal;
-out vec3 v_viewCoords; // Position in model view space
 out vec3 v_R;
-
 
 // taken from http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
 highp float rand(vec2 co)
@@ -54,16 +53,12 @@ float getHeightField(vec3 pos) {
     vec2 k = vec2(2.0 * PI * n / u_L, 2.0 * PI * m / u_L);
     float lengthK = length(k);
 
-    // numeric constant
-    float A = 0.001;
-
     // largest possible waves arising from a continuous wind of speed
-    float V = 10.0;
-    float L = V * V / g;
+    float L = u_V * u_V / g;
 
     float cosP = length(dot (normalize(k), normalize(wind)));
     float temp = lengthK * L;
-    float P = A * exp( -1.0 / (temp * temp)) * pow(lengthK, 4.0) * cosP * cosP;
+    float P = u_A * exp( -1.0 / (temp * temp)) * pow(lengthK, 4.0) * cosP * cosP;
 
     float wl = L / 10000.0;
     P *= exp(lengthK * lengthK * (wl * wl));
@@ -102,10 +97,7 @@ void main() {
     v_position = a;
     gl_Position = u_viewProjectionMatrix * vec4(a, 1.0);
 
-    // For reflection
-    // vec4 eyeCoords = u_viewMatrix * vec4(a, 1.0);
-    // v_viewCoords = eyeCoords.xyz;
-
+    // Reflection
     vec3 eyePos = normalize(a - u_cameraPos);
     vec4 NN = u_viewMatrix * vec4(v_normal, 1.0);
     vec3 N = normalize(NN.xyz);

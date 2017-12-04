@@ -8,7 +8,6 @@ export default function(params) {
     out vec4 v_color;
 
     void main() {
-      // vec3 albedo = vec3(107.0/255.0, 180.0/255.0, 69.0/255.0);
       vec3 albedo = vec3(1.0, 1.0, 1.0);
       vec3 normal = v_normal;
       vec3 pos = v_position;
