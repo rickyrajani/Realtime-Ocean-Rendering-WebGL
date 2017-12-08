@@ -6,6 +6,7 @@ export default function(params) {
   in vec3 v_normal;
   in vec3 v_viewCoords;
   in vec3 v_R;
+  in float v_random;
 
   out vec4 v_color;
 
@@ -40,6 +41,11 @@ export default function(params) {
     
     fragColor += (fresnel + 0.1) * vec3(texture(skybox, v_R)) + (1.0 - fresnel) * darkBlue;
     v_color = vec4(fragColor, 0.75);
+    
+    
+    // v_color = vec4(v_col, 1.0);
+
+    // v_color = vec4(0.0,0.0, 1.0, 1.0);
   }
   `;
 }

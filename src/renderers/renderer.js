@@ -19,7 +19,7 @@ export default class Renderer {
 
     this._shaderProgramOcean = loadShaderProgram(vsSourceOcean, fsSourceOcean(), {
       uniforms: ['u_viewProjectionMatrix', 'u_viewMatrix', 'u_noise', 'u_time', 'u_L', 'u_resolution', 'u_cameraPos', 'u_A', 'u_V'],
-      attribs: ['a_position'],
+      attribs: ['a_position', 'a_heightMap', 'a_w'],
     });
 
     this._shaderProgramSkybox = loadShaderProgram(vsSourceSkybox, fsSourceSkybox(), {
@@ -38,6 +38,7 @@ export default class Renderer {
 
     scene.OCEAN_SIZE = params.size;
     scene.createBuffers();
+    scene.createHeightMapBuffers();
   }
 
   render(camera, scene) {
@@ -63,10 +64,10 @@ export default class Renderer {
     scene.drawSkybox(this._shaderProgramSkybox);
 
     // Draw the terrain
-    gl.useProgram(this._shaderProgramTerrain.glShaderProgram);
-    gl.uniformMatrix4fv(this._shaderProgramTerrain.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
-    gl.uniform1f(this._shaderProgramTerrain.u_noise, this._noise);
-    scene.draw(this._shaderProgramTerrain);
+    // gl.useProgram(this._shaderProgramTerrain.glShaderProgram);
+    // gl.uniformMatrix4fv(this._shaderProgramTerrain.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
+    // gl.uniform1f(this._shaderProgramTerrain.u_noise, this._noise);
+    // scene.draw(this._shaderProgramTerrain);
     
     // Draw the ocean
     gl.useProgram(this._shaderProgramOcean.glShaderProgram);

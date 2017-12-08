@@ -17,10 +17,13 @@ uniform int u_resolution;
 uniform vec3 u_cameraPos;
 
 in vec3 a_position;
+in vec4 a_heightMap;
+in float a_w;
 
 out vec3 v_position;
 out vec3 v_normal;
 out vec3 v_R;
+out float v_random;
 
 // taken from http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
 highp float rand(vec2 co)
@@ -41,16 +44,26 @@ vec2 complexProduct(vec2 a, vec2 b) {
     return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
 }
 
+float gausRand(float r1, float r2) {
+    return sqrt(-2.0 * log(r1)) * cos(2.0 * PI * r2);
+}
+
 vec2 getH_0 (vec2 k, float P) {
-    float rand1 = rand(vec2(k.x, k.y)) * 2.0 - 1.0;
-    float rand2 = rand(vec2((mod(k.y * rand1, 11.0), mod(k.x, 17.0)))) * 2.0 - 1.0;
+    float r1 = rand(vec2(k.x, k.y)) * 2.0 - 1.0;
+    float r2 = rand(vec2((mod(k.y * r1, 11.0), mod(k.x, 17.0)))) * 2.0 - 1.0;
+
+    float rand1 = gausRand(r1, r2);
+    float rand2 = gausRand(r2, r1);
+
     return vec2( 1.0 / pow (2.0, 0.5) * rand1 * sqrt(P), 1.0 / sqrt(2.0) * rand2 * pow(P, 0.5));
 }
 
 float getHeightField(vec3 pos) {
+
     float n = pos.x;
     float m = pos.z;
     vec2 k = vec2(2.0 * PI * n / u_L, 2.0 * PI * m / u_L);
+    /*
     float lengthK = length(k);
 
     // largest possible waves arising from a continuous wind of speed
@@ -62,11 +75,12 @@ float getHeightField(vec3 pos) {
 
     float wl = L / 10000.0;
     P *= exp(lengthK * lengthK * (wl * wl));
+    */
 
-    vec2 h_0 = getH_0(k, P);
-    vec2 h_0_star = getH_0(-k, P);
+    vec2 h_0 = vec2(a_heightMap.x, a_heightMap.y);
+    vec2 h_0_star = vec2(a_heightMap.z, a_heightMap.w);
 
-    float w = sqrt(g * lengthK);
+    float w = a_w;
 
     vec2 h_01 = complexProduct(h_0, complexExp( w * u_time));
     vec2 h_0_star1 = complexProduct(h_0_star, complexExp(-w * u_time));
@@ -80,7 +94,7 @@ float getHeightField(vec3 pos) {
 
 void main() {
     vec3 a = a_position;
-
+    
     float delta = u_L/float(u_resolution);
     float y = getHeightField(a) + 55.0;
     a.y = y;
@@ -101,5 +115,9 @@ void main() {
     vec3 eyePos = normalize(a - u_cameraPos);
     vec4 NN = u_viewMatrix * vec4(v_normal, 1.0);
     vec3 N = normalize(NN.xyz);
-    v_R = reflect(eyePos, v_normal);
+    v_R = reflect(eyePos, v_normal); 
+
+    // v_random = rand(vec2(a.x, a.z));
+
+    // gl_Position = u_viewProjectionMatrix * vec4(a, 1.0);
 }

@@ -1,22 +1,29 @@
 import { gl } from './init';
+import { Vector3, Vector2 } from 'three';
 
 const FLOAT_SIZE = 4;
+const g = 9.81;
 
 var texId;
 
 class Scene {
   constructor() {
+    this.amplitude = 0.001;
     this.aCoords_Skybox;
     this.uProjection_Skybox;  
     this.uModelview_Skybox;
     this._texID;
     this.cube;
-    this.OCEAN_SIZE = 200.0;
+    this.OCEAN_SIZE = 10.0;
     this.vertices = [];
     this.indices = [];
+    this.colors = [];
+    this.heightMap = [];
+    this.w = [];
     this.noise = [];
     this.time = 0;
-    this.OCEAN_RESOLUTION = 256.0;
+    this.OCEAN_RESOLUTION = 128.0;
+    this.wind = new Vector2(1.0, 1.0);
   }
 
   update() {
@@ -25,11 +32,26 @@ class Scene {
   
   createBuffers() {
     this.vertices = [];
+    let count = 0;
     for (let z = 0; z < this.OCEAN_RESOLUTION; z++) {
       for (let x = 0; x < this.OCEAN_RESOLUTION; x++) {
         this.vertices.push((x * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
-        this.vertices.push(0.0);
+        this.vertices.push(0.0)
         this.vertices.push((z * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0);
+        if (count % 3 == 1) {
+          this.colors.push(0.0);
+          this.colors.push(1.0);
+          this.colors.push(0.0);
+        } else if (count % 3 == 0) {
+          this.colors.push(1.0);
+          this.colors.push(0.0);
+          this.colors.push(0.0);
+        } else {
+          this.colors.push(0.0);
+          this.colors.push(0.0);
+          this.colors.push(1.0);
+        }
+        count++;
       }
     }
 
@@ -48,6 +70,53 @@ class Scene {
         this.indices.push(UL);
       }
     }
+  }
+
+  createHeightMapBuffers() {
+    this.heightMap = [];
+    this.w = [];
+    for (let z = 0; z < this.OCEAN_RESOLUTION; z++) {
+      for (let x = 0; x < this.OCEAN_RESOLUTION; x++) {
+        var xPos = (x * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
+        var zPos = (z * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
+        // var height = getHeightMap(xPos, zPos);
+        var u_L = this.OCEAN_SIZE;
+        var u_V = 10.0;
+        var u_A = this.amplitude;
+
+        // debugger;
+        var n = xPos;
+        var m = zPos;
+        var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);
+        var lengthK = k.length();
+    
+        // largest possible waves arising from a continuous wind of speed
+        var L = u_V * u_V / g;
+        var k_Nor = k.normalize();
+        var kDotWind = k_Nor.dot(this.wind.normalize());
+        var cosP = kDotWind;
+        var temp = L * lengthK;
+        var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, 4.0) * cosP * cosP;
+    
+        var wl = L / 10000.0;
+        P *= Math.exp(lengthK * lengthK *  (wl* wl));
+    
+        var h_0 = this.getH_0(k, P);
+        var h_0_star = this.getH_0(-k, P);
+        var w = Math.sqrt(g * lengthK);
+
+        this.heightMap.push(h_0.x);
+        this.heightMap.push(h_0.y);
+        this.heightMap.push(h_0_star.x);
+        this.heightMap.push(h_0_star.y);
+
+        this.w.push(w);
+        // this.heightMap.push(height.x);
+        // this.heightMap.push(height.y);
+        // this.heightMap.push(height.z);
+      }
+    }
+    // debugger;
   }
 
   skybox(side) {
@@ -115,6 +184,45 @@ class Scene {
     }
   }
 
+// https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
+// Standard Normal variate using Box-Muller transform.
+  gausRand() {
+    var u = 0, v = 0;
+    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
+    while(v === 0) v = Math.random();
+    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
+  }
+
+  getH_0(k, P) {
+    var rand1 = this.gausRand();
+    var rand2 = this.gausRand();
+    return new Vector2( 1.0 / Math.pow (2.0, 0.5) * rand1 * Math.sqrt(P), 
+      1.0 / Math.sqrt(2.0) * rand2 * Math.pow(P, 0.5));
+  }
+
+  getHeightMap(x, z) {
+    var n = x;
+    var m = z;
+    var k = new Vector2(2.0 * PI * n / u_L, 2.0 * Math.PI * m / u_L);
+    var lengthK = Math.length(k);
+
+    // largest possible waves arising from a continuous wind of speed
+    var L = u_V * u_V / g;
+
+    var cosP = Math.length(Math.dot (Math.normalize(k), Math.normalize(this.wind)));
+    var temp = lengthK * L;
+    var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, 4.0) * cosP * cosP;
+
+    var wl = L / 10000.0;
+    P *= Math.exp(lengthK * lengthK * (wl * wl));
+
+    var h_0 = getH_0(k, P);
+    var h_0_star = getH_0(-k, P);
+    var w = Math.sqrt(g * lengthK);
+    
+    return new Vector3(h_0, h_0_star, w);
+  }
+
   drawSkybox(shaderProgram) {
     if(this._texID) {
       var modelData = this.skybox(500);
@@ -140,6 +248,8 @@ class Scene {
       // Ocean water plane
       var vertexBuffer = gl.createBuffer();
       var indicesBuffer = gl.createBuffer();
+      var heightMapBuffer = gl.createBuffer();
+      var wBuffer = gl.createBuffer();
 
       // Bind ocean vertex positions
       gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -147,11 +257,23 @@ class Scene {
       gl.enableVertexAttribArray(shaderProgram.a_position);
       gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
 
+      // bind heightMap
+      gl.bindBuffer(gl.ARRAY_BUFFER, heightMapBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.heightMap), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(shaderProgram.a_heightMap);
+      gl.vertexAttribPointer(shaderProgram.a_heightMap, 4, gl.FLOAT, false, 4 * FLOAT_SIZE, 0);  
+
+      // bind w?
+      gl.bindBuffer(gl.ARRAY_BUFFER, wBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.w), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(shaderProgram.a_w);
+      gl.vertexAttribPointer(shaderProgram.a_w, 1, gl.FLOAT, false, FLOAT_SIZE, 0);  
+
       // Bind ocean vertex indices
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), gl.STATIC_DRAW);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW);
 
-      gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_INT, 0);
     }
   }
 
