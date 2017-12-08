@@ -38,7 +38,9 @@ export default class Renderer {
     scene.OCEAN_SIZE = params.size;
     scene.amplitude = params.amplitude;
     scene.createBuffers();
+    scene.createPatchBuffers();    
     scene.createHeightMapBuffers();
+    scene.createTerrainBuffers();
   }
 
   render(camera, scene) {
@@ -67,7 +69,7 @@ export default class Renderer {
     // gl.useProgram(this._shaderProgramTerrain.glShaderProgram);
     // gl.uniformMatrix4fv(this._shaderProgramTerrain.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
     // gl.uniform1f(this._shaderProgramTerrain.u_noise, this._noise);
-    // scene.draw(this._shaderProgramTerrain);
+    // scene.drawTerrain(this._shaderProgramTerrain);
     
     // Draw the ocean
     gl.useProgram(this._shaderProgramOcean.glShaderProgram);
@@ -80,6 +82,9 @@ export default class Renderer {
     gl.uniform1f(this._shaderProgramOcean.u_A, scene.amplitude);
     gl.uniform1f(this._shaderProgramOcean.u_V, this._wind);
     scene.loadTexture();
-    scene.draw(this._shaderProgramOcean);
+    // scene.drawOcean(this._shaderProgramOcean);
+
+    gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_LOW_RES);
+    scene.drawOceanLowRes(this._shaderProgramOcean);
   }
 };
