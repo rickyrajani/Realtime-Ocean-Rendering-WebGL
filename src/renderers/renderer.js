@@ -32,11 +32,11 @@ export default class Renderer {
     this._viewProjectionMatrix = mat4.create();
 
     this._noise = params.noise;
-    this._amplitude = params.amplitude;
     this._wind = params.wind;
     this._speed = params.speed;
 
     scene.OCEAN_SIZE = params.size;
+    scene.amplitude = params.amplitude;
     scene.createBuffers();
     scene.createHeightMapBuffers();
   }
@@ -77,7 +77,7 @@ export default class Renderer {
     gl.uniform1f(this._shaderProgramOcean.u_time, scene.time * this._speed);
     gl.uniform1f(this._shaderProgramOcean.u_L, scene.OCEAN_SIZE);
     gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_RESOLUTION);
-    gl.uniform1f(this._shaderProgramOcean.u_A, this._amplitude);
+    gl.uniform1f(this._shaderProgramOcean.u_A, scene.amplitude);
     gl.uniform1f(this._shaderProgramOcean.u_V, this._wind);
     scene.loadTexture();
     scene.draw(this._shaderProgramOcean);

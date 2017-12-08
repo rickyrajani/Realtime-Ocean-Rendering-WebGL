@@ -20,7 +20,7 @@ export default function(params) {
     
     vec3 fragColor = vec3(0.0);
 
-    vec3 lightDir = normalize(vec3(1, 75, -5) - pos);
+    vec3 lightDir = normalize(vec3(0, 75, 5) - pos);
     float NdotL = clamp(dot(normal, lightDir), 0.1, 1.0);
 
     mat4 invViewMatrix = inverse(u_viewMatrix);

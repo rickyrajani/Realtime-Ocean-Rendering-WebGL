@@ -8,7 +8,7 @@ var texId;
 
 class Scene {
   constructor() {
-    this.amplitude = 0.001;
+    this.amplitude = 0.00001;
     this.aCoords_Skybox;
     this.uProjection_Skybox;  
     this.uModelview_Skybox;
@@ -22,7 +22,7 @@ class Scene {
     this.w = [];
     this.noise = [];
     this.time = 0;
-    this.OCEAN_RESOLUTION = 128.0;
+    this.OCEAN_RESOLUTION = 512.0;
     this.wind = new Vector2(1.0, 1.0);
   }
 
@@ -79,14 +79,13 @@ class Scene {
       for (let x = 0; x < this.OCEAN_RESOLUTION; x++) {
         var xPos = (x * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
         var zPos = (z * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
-        // var height = getHeightMap(xPos, zPos);
+        
         var u_L = this.OCEAN_SIZE;
         var u_V = 10.0;
         var u_A = this.amplitude;
 
-        // debugger;
-        var n = xPos;
-        var m = zPos;
+        var n = xPos + this.OCEAN_SIZE/2.0;
+        var m = zPos + this.OCEAN_SIZE/2.0;
         var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);
         var lengthK = k.length();
     
@@ -111,12 +110,8 @@ class Scene {
         this.heightMap.push(h_0_star.y);
 
         this.w.push(w);
-        // this.heightMap.push(height.x);
-        // this.heightMap.push(height.y);
-        // this.heightMap.push(height.z);
       }
     }
-    // debugger;
   }
 
   skybox(side) {
@@ -155,9 +150,9 @@ class Scene {
     var count = 0;
     var img = new Array(6);
     var urls = [
-      "../img/cloudtop_rt.jpg", "../img/cloudtop_lf.jpg", 
+      "../img/cloudtop_ft.jpg", "../img/cloudtop_bk.jpg", 
       "../img/cloudtop_up.jpg", "../img/cloudtop_dn.jpg", 
-      "../img/cloudtop_bk.jpg", "../img/cloudtop_ft.jpg"
+      "../img/cloudtop_rt.jpg", "../img/cloudtop_lf.jpg"
     ];
     for (var i = 0; i < 6; i++) {
         img[i] = new Image();
