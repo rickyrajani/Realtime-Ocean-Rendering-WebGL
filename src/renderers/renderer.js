@@ -40,6 +40,7 @@ export default class Renderer {
     scene.createBuffers();
     scene.createPatchBuffers();    
     scene.createHeightMapBuffers();
+    scene.createHeightMapLowResBuffers();
     scene.createTerrainBuffers();
   }
 
@@ -78,7 +79,7 @@ export default class Renderer {
     gl.uniform3f(this._shaderProgramOcean.u_cameraPos, camera.position.x, camera.position.y, camera.position.z);
     gl.uniform1f(this._shaderProgramOcean.u_time, scene.time * this._speed);
     gl.uniform1f(this._shaderProgramOcean.u_L, scene.OCEAN_SIZE);
-    gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_RESOLUTION);
+    // gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_RESOLUTION);
     gl.uniform1f(this._shaderProgramOcean.u_A, scene.amplitude);
     gl.uniform1f(this._shaderProgramOcean.u_V, this._wind);
     scene.loadTexture();
