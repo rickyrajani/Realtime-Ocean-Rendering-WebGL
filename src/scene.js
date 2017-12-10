@@ -140,6 +140,7 @@ class Scene {
         var u_V = 10.0;
         var u_A = this.amplitude;
 
+        // shifting it to fix waves on diagonal
         var n = xPos + this.OCEAN_SIZE/2.0;
         var m = zPos + this.OCEAN_SIZE/2.0;
         var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);

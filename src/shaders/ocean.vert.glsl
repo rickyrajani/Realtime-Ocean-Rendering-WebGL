@@ -15,6 +15,7 @@ uniform float u_A;
 uniform float u_V;
 uniform int u_resolution;
 uniform vec3 u_cameraPos;
+uniform float u_choppiness;
 
 in vec3 a_position;
 in vec4 a_heightMap;
@@ -58,7 +59,8 @@ vec2 getH_0 (vec2 k, float P) {
     return vec2( 1.0 / pow (2.0, 0.5) * rand1 * sqrt(P), 1.0 / sqrt(2.0) * rand2 * pow(P, 0.5));
 }
 
-float getHeightField(vec3 pos) {
+// first value is heightfield, second is x displacement
+vec2 getHeightField(vec3 pos) {
 
     float n = pos.x;
     float m = pos.z;
@@ -85,39 +87,38 @@ float getHeightField(vec3 pos) {
     vec2 h_01 = complexProduct(h_0, complexExp( w * u_time));
     vec2 h_0_star1 = complexProduct(h_0_star, complexExp(-w * u_time));
 
+    // h(k, t)
     vec2 h_t = h_01 + h_0_star1;
 
     vec2 h_x_t = complexProduct(h_t, complexExp(dot(k, vec2(n,m))));
 
-    return h_x_t.x;
+    vec2 k_normalized = normalize(k);
+
+    float lambda = u_choppiness;
+    vec2 d_x_t = lambda * complexProduct(-k_normalized, vec2(h_x_t.y, h_x_t.x));
+
+    return vec2(h_x_t.x, d_x_t.x);
 }
 
 void main() {
     vec3 a = a_position;
     
     float delta = u_L/float(u_resolution);
-    float y = getHeightField(a) + 55.0;
+    vec2 a_delta = getHeightField(a);
+    float y = a_delta.x + 55.0;
     a.y = y;
+    a.x += a_delta.y;
 
     vec3 b = vec3(a_position.x + delta, a_position.y, a_position.z);
-    b.y = getHeightField(b) + 55.0;
+    vec2 b_delta = getHeightField(b);
+    b.y = b_delta.x + 55.0;
+    b.x += b_delta.y;
 
     vec3 c = vec3(a_position.x, a_position.y, a_position.z + delta);		
-    c.y = getHeightField(c) + 55.0;	
-/*
-    vec3 d = vec3(a_position.x - delta, a_position.y, a_position.z);		
-    d.y = getHeightField(c) + 55.0;	
+    vec2 c_delta = getHeightField(c);
+    c.y = c_delta.x + 55.0;	
+    c.x += c_delta.y;
 
-    vec3 e = vec3(a_position.x, a_position.y, a_position.z - delta);		
-    e.y = getHeightField(c) + 55.0;	
-
-    vec3 norm1 = normalize(cross((b - a), (c - a)));
-    vec3 norm2 = normalize(cross((c - a), (d - a)));
-    vec3 norm3 = normalize(cross((d - a), (e - a)));
-    vec3 norm4 = normalize(cross((e - a), (b - a)));
-
-    v_normal = (norm1 + norm2 + norm3 + norm4)/4.0;
-*/
     vec3 dir = normalize(cross((b - a), (c - a)));
     v_normal = dir;
 
