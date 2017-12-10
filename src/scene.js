@@ -19,9 +19,7 @@ class Scene {
     this.wind = new Vector2(1.0, 1.0);
     this.amplitude = 0.00001;
 
-    this.OCEAN_SIZE = 100.0;
-
-    this.OCEAN_RESOLUTION = 256.0;
+    this.OCEAN_RESOLUTION = 512.0;
     this.vertices = [];
     this.indices = [];
     this.heightMap = [];
@@ -31,13 +29,11 @@ class Scene {
     this.terrainVertices = [];
     this.terrainIndices = [];
 
-    this.OCEAN_LOW_RES = 4.0;
+    this.OCEAN_LOW_RES = 128.0;
     this.verticesLowRes = [];
     this.indicesLowRes = [];
     this.heightMapLowRes = [];
     this.wLowRes = [];
-
-    this.count = 0;
   }
 
   update() {
@@ -100,10 +96,9 @@ class Scene {
 
   createPatchBuffers() {
     this.verticesLowRes = [];
-    this.indicesLowRes = [];
 
-    for (let i = 0; i < 1; i++) {
-      for (let j = 0; j < 1; j++) {
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
         for (let z = 0; z < this.OCEAN_LOW_RES; z++) {
           for (let x = 0; x < this.OCEAN_LOW_RES; x++) {
             this.verticesLowRes.push((x * this.OCEAN_SIZE)/ (this.OCEAN_LOW_RES - 1) 
@@ -113,23 +108,22 @@ class Scene {
               - this.OCEAN_SIZE/2.0 + (j - 1) * this.OCEAN_SIZE);
           }
         }
-    
-        for (let z = 0; z < this.OCEAN_LOW_RES - 1; z++) {
-          for (let x = 0; x < this.OCEAN_LOW_RES - 1; x++) {
-            var patchIdx = this.count * (this.OCEAN_LOW_RES * this.OCEAN_LOW_RES);
-            let UL = z * this.OCEAN_LOW_RES + x + patchIdx;
-            let UR = UL + 1 + patchIdx;
-            let BL = UL + this.OCEAN_LOW_RES + patchIdx;
-            let BR = BL + 1 + patchIdx;
-            this.indicesLowRes.push(UL);
-            this.indicesLowRes.push(BL);
-            this.indicesLowRes.push(BR);
-            this.indicesLowRes.push(BR);
-            this.indicesLowRes.push(UR);                
-            this.indicesLowRes.push(UL);
-          }
-        }
-        this.count++;
+      }
+    }
+
+    this.indicesLowRes = [];
+    for (let z = 0; z < this.OCEAN_LOW_RES - 1; z++) {
+      for (let x = 0; x < this.OCEAN_LOW_RES - 1; x++) {
+        let UL = z * this.OCEAN_LOW_RES + x;
+        let UR = UL + 1;
+        let BL = UL + this.OCEAN_LOW_RES;
+        let BR = BL + 1;
+        this.indicesLowRes.push(UL);
+        this.indicesLowRes.push(BL);
+        this.indicesLowRes.push(BR);
+        this.indicesLowRes.push(BR);
+        this.indicesLowRes.push(UR);                
+        this.indicesLowRes.push(UL);
       }
     }
   }
@@ -137,45 +131,39 @@ class Scene {
   createHeightMapBuffers() {
     this.heightMap = [];
     this.w = [];
-    this.heightMapLowRes = [];
-    this.wLowRes = [];
-    for (let i = 0; i < 1; i++) {
-      for (let j = 0; j < 1; j++) {
-        for (let z = 0; z < this.OCEAN_RESOLUTION; z++) {
-          for (let x = 0; x < this.OCEAN_RESOLUTION; x++) {
-            var xPos = (x * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
-            var zPos = (z * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
-            
-            var u_L = this.OCEAN_SIZE;
-            var u_V = 10.0;
-            var u_A = this.amplitude;
+    for (let z = 0; z < this.OCEAN_RESOLUTION; z++) {
+      for (let x = 0; x < this.OCEAN_RESOLUTION; x++) {
+        var xPos = (x * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
+        var zPos = (z * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
+        
+        var u_L = this.OCEAN_SIZE;
+        var u_V = 10.0;
+        var u_A = this.amplitude;
 
-            var n = xPos + this.OCEAN_SIZE/2.0;
-            var m = zPos + this.OCEAN_SIZE/2.0;
-            var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);
-            var lengthK = k.length();
-        
-            // largest possible waves arising from a continuous wind of speed
-            var L = u_V * u_V / g;
-            var k_Nor = k.normalize();
-            var kDotWind = k_Nor.dot(this.wind.normalize());
-            var cosP = kDotWind;
-            var temp = L * lengthK;
-            var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, 4.0) * cosP * cosP;
-        
-            var wl = L / 10000.0;
-            P *= Math.exp(lengthK * lengthK *  (wl* wl));
-        
-            var h_0 = this.getH_0(k, P);
-            var h_0_star = this.getH_0(-k, P);
-            var w = Math.sqrt(g * lengthK);
-            this.heightMap.push(h_0.x);
-            this.heightMap.push(h_0.y);
-            this.heightMap.push(h_0_star.x);
-            this.heightMap.push(h_0_star.y);
-            this.w.push(w);              
-          }
-        }
+        var n = xPos + this.OCEAN_SIZE/2.0;
+        var m = zPos + this.OCEAN_SIZE/2.0;
+        var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);
+        var lengthK = k.length();
+    
+        // largest possible waves arising from a continuous wind of speed
+        var L = u_V * u_V / g;
+        var k_Nor = k.normalize();
+        var kDotWind = k_Nor.dot(this.wind.normalize());
+        var cosP = kDotWind;
+        var temp = L * lengthK;
+        var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, 4.0) * cosP * cosP;
+    
+        var wl = L / 10000.0;
+        P *= Math.exp(lengthK * lengthK *  (wl* wl));
+    
+        var h_0 = this.getH_0(k, P);
+        var h_0_star = this.getH_0(-k, P);
+        var w = Math.sqrt(g * lengthK);
+        this.heightMap.push(h_0.x);
+        this.heightMap.push(h_0.y);
+        this.heightMap.push(h_0_star.x);
+        this.heightMap.push(h_0_star.y);
+        this.w.push(w);              
       }
     }
   }
@@ -183,43 +171,38 @@ class Scene {
   createHeightMapLowResBuffers() {
     this.heightMapLowRes = [];
     this.wLowRes = [];
-    for (let i = 0; i < 1; i++) {
-      for (let j = 0; j < 1; j++) {
-        for (let z = 0; z < this.OCEAN_LOW_RES; z++) {
-          for (let x = 0; x < this.OCEAN_LOW_RES; x++) {
-            var xPos = (x * this.OCEAN_SIZE)/ (this.OCEAN_LOW_RES - 1) - this.OCEAN_SIZE/2.0;
-            var zPos = (z * this.OCEAN_SIZE)/ (this.OCEAN_LOW_RES - 1) - this.OCEAN_SIZE/2.0;
-            
-            var u_L = this.OCEAN_SIZE;
-            var u_V = 10.0;
-            var u_A = this.amplitude;
+    for (let z = 0; z < this.OCEAN_LOW_RES; z++) {
+      for (let x = 0; x < this.OCEAN_LOW_RES; x++) {
+        var xPos = (x * this.OCEAN_SIZE)/ (this.OCEAN_LOW_RES - 1) - this.OCEAN_SIZE/2.0;
+        var zPos = (z * this.OCEAN_SIZE)/ (this.OCEAN_LOW_RES - 1) - this.OCEAN_SIZE/2.0;
+        var u_L = this.OCEAN_SIZE;
+        var u_V = 10.0;
+        var u_A = this.amplitude;
 
-            var n = xPos + this.OCEAN_SIZE/2.0;
-            var m = zPos + this.OCEAN_SIZE/2.0;
-            var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);
-            var lengthK = k.length();
-        
-            // largest possible waves arising from a continuous wind of speed
-            var L = u_V * u_V / g;
-            var k_Nor = k.normalize();
-            var kDotWind = k_Nor.dot(this.wind.normalize());
-            var cosP = kDotWind;
-            var temp = L * lengthK;
-            var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, 4.0) * cosP * cosP;
-        
-            var wl = L / 10000.0;
-            P *= Math.exp(lengthK * lengthK *  (wl* wl));
-        
-            var h_0 = this.getH_0(k, P);
-            var h_0_star = this.getH_0(-k, P);
-            var w = Math.sqrt(g * lengthK);
-            this.heightMapLowRes.push(h_0.x);
-            this.heightMapLowRes.push(h_0.y);
-            this.heightMapLowRes.push(h_0_star.x);
-            this.heightMapLowRes.push(h_0_star.y);
-            this.wLowRes.push(w);              
-          }
-        }
+        var n = xPos + this.OCEAN_SIZE/2.0;
+        var m = zPos + this.OCEAN_SIZE/2.0;
+        var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);
+        var lengthK = k.length();
+    
+        // largest possible waves arising from a continuous wind of speed
+        var L = u_V * u_V / g;
+        var k_Nor = k.normalize();
+        var kDotWind = k_Nor.dot(this.wind.normalize());
+        var cosP = kDotWind;
+        var temp = L * lengthK;
+        var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, 4.0) * cosP * cosP;
+    
+        var wl = L / 10000.0;
+        P *= Math.exp(lengthK * lengthK *  (wl* wl));
+    
+        var h_0 = this.getH_0(k, P);
+        var h_0_star = this.getH_0(-k, P);
+        var w = Math.sqrt(g * lengthK);
+        this.heightMapLowRes.push(h_0.x);
+        this.heightMapLowRes.push(h_0.y);
+        this.heightMapLowRes.push(h_0_star.x);
+        this.heightMapLowRes.push(h_0_star.y);
+        this.wLowRes.push(w);              
       }
     }
   }
@@ -382,19 +365,27 @@ class Scene {
     }
   }
 
-  drawOceanLowRes(shaderProgram) {
+  drawOceanLowRes(shaderProgram, count) {
+    var vertexBuffer = gl.createBuffer();
+    
+    let start = this.OCEAN_LOW_RES * this.OCEAN_LOW_RES * 3 * count;
+    let end = start + (this.OCEAN_LOW_RES * this.OCEAN_LOW_RES * 3);
+    let verticesPatch = this.verticesLowRes.slice(start, end);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesPatch), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(shaderProgram.a_position);
+    gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);
+    
+    gl.drawElements(gl.TRIANGLES, this.indicesLowRes.length, gl.UNSIGNED_INT, 0);
+  }
+
+  bindOceanLowResBuffers(shaderProgram) {
     if (this._texID) {
       // Ocean water plane
-      var vertexBuffer = gl.createBuffer();
       var indicesBuffer = gl.createBuffer();
       var heightMapBuffer = gl.createBuffer();
       var wBuffer = gl.createBuffer();
-
-      // Bind ocean vertex positions
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.verticesLowRes), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(shaderProgram.a_position);
-      gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
 
       // bind heightMap
       gl.bindBuffer(gl.ARRAY_BUFFER, heightMapBuffer);
@@ -411,8 +402,6 @@ class Scene {
       // Bind ocean vertex indices
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indicesLowRes), gl.STATIC_DRAW);
-
-      gl.drawElements(gl.TRIANGLES, this.indicesLowRes.length, gl.UNSIGNED_INT, 0);
     }
   }
 

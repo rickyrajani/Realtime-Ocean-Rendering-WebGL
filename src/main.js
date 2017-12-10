@@ -16,7 +16,7 @@ gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
 
 const params = {
   noise: 0.15,
-  size: 100,
+  size: 200,
   amplitude: 0.00001,
   wind: 10.0,
   speed: 0.1,

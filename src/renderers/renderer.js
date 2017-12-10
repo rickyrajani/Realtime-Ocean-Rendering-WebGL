@@ -67,10 +67,10 @@ export default class Renderer {
     scene.drawSkybox(this._shaderProgramSkybox);
 
     // Draw the terrain
-    // gl.useProgram(this._shaderProgramTerrain.glShaderProgram);
-    // gl.uniformMatrix4fv(this._shaderProgramTerrain.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
-    // gl.uniform1f(this._shaderProgramTerrain.u_noise, this._noise);
-    // scene.drawTerrain(this._shaderProgramTerrain);
+    gl.useProgram(this._shaderProgramTerrain.glShaderProgram);
+    gl.uniformMatrix4fv(this._shaderProgramTerrain.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
+    gl.uniform1f(this._shaderProgramTerrain.u_noise, this._noise);
+    scene.drawTerrain(this._shaderProgramTerrain);
     
     // Draw the ocean
     gl.useProgram(this._shaderProgramOcean.glShaderProgram);
@@ -79,13 +79,19 @@ export default class Renderer {
     gl.uniform3f(this._shaderProgramOcean.u_cameraPos, camera.position.x, camera.position.y, camera.position.z);
     gl.uniform1f(this._shaderProgramOcean.u_time, scene.time * this._speed);
     gl.uniform1f(this._shaderProgramOcean.u_L, scene.OCEAN_SIZE);
-    // gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_RESOLUTION);
+    gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_RESOLUTION);
     gl.uniform1f(this._shaderProgramOcean.u_A, scene.amplitude);
     gl.uniform1f(this._shaderProgramOcean.u_V, this._wind);
     scene.loadTexture();
-    // scene.drawOcean(this._shaderProgramOcean);
+    scene.drawOcean(this._shaderProgramOcean);
 
     gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_LOW_RES);
-    scene.drawOceanLowRes(this._shaderProgramOcean);
+    scene.bindOceanLowResBuffers(this._shaderProgramOcean);
+    for(let i = 0; i < 9; i++) {
+      if (i == 4) {
+        continue;
+      }
+      scene.drawOceanLowRes(this._shaderProgramOcean, i);
+    }
   }
 };

@@ -104,12 +104,12 @@ void main() {
 
     vec3 c = vec3(a_position.x, a_position.y, a_position.z + delta);		
     c.y = getHeightField(c) + 55.0;	
-
+/*
     vec3 d = vec3(a_position.x - delta, a_position.y, a_position.z);		
-    c.y = getHeightField(c) + 55.0;	
+    d.y = getHeightField(c) + 55.0;	
 
     vec3 e = vec3(a_position.x, a_position.y, a_position.z - delta);		
-    c.y = getHeightField(c) + 55.0;	
+    e.y = getHeightField(c) + 55.0;	
 
     vec3 norm1 = normalize(cross((b - a), (c - a)));
     vec3 norm2 = normalize(cross((c - a), (d - a)));
@@ -117,9 +117,9 @@ void main() {
     vec3 norm4 = normalize(cross((e - a), (b - a)));
 
     v_normal = (norm1 + norm2 + norm3 + norm4)/4.0;
-
-    //vec3 dir = normalize(cross((b - a), (c - a)));
-    //v_normal = dir;
+*/
+    vec3 dir = normalize(cross((b - a), (c - a)));
+    v_normal = dir;
 
     v_position = a;
     gl_Position = u_viewProjectionMatrix * vec4(a, 1.0);
