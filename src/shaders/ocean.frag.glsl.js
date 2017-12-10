@@ -40,12 +40,7 @@ export default function(params) {
     float fresnel = R_0 + (1.0 - R_0) * pow(1.0 - dot, 5.0);
     
     fragColor += (fresnel + 0.1) * vec3(texture(skybox, v_R)) + (1.0 - fresnel) * darkBlue;
-    v_color = vec4(fragColor, 0.75);
-    
-    
-    // v_color = vec4(v_col, 1.0);
-
-    // v_color = vec4(0.0,0.0, 1.0, 1.0);
+    v_color = vec4(fragColor, 0.90);
   }
   `;
 }

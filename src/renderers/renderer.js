@@ -35,6 +35,7 @@ export default class Renderer {
     this._wind = params.wind;
     this._speed = params.speed;
 
+    scene.wireframe = params.wireframe;
     scene.OCEAN_SIZE = params.size;
     scene.amplitude = params.amplitude;
     scene.createBuffers();

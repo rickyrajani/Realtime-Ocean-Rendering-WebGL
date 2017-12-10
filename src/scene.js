@@ -361,7 +361,11 @@ class Scene {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW);
 
-      gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_INT, 0);
+      var mode = gl.TRIANGLES;
+      if(this.wireframe) {
+        mode = gl.LINES
+      }
+      gl.drawElements(mode, this.indices.length, gl.UNSIGNED_INT, 0);
     }
   }
 
@@ -377,7 +381,11 @@ class Scene {
     gl.enableVertexAttribArray(shaderProgram.a_position);
     gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);
     
-    gl.drawElements(gl.TRIANGLES, this.indicesLowRes.length, gl.UNSIGNED_INT, 0);
+    var mode = gl.TRIANGLES;
+    if(this.wireframe) {
+      mode = gl.LINES
+    }
+    gl.drawElements(mode, this.indicesLowRes.length, gl.UNSIGNED_INT, 0);
   }
 
   bindOceanLowResBuffers(shaderProgram) {
@@ -421,7 +429,11 @@ class Scene {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.terrainIndices), gl.STATIC_DRAW);
 
-    gl.drawElements(gl.TRIANGLES, this.terrainIndices.length, gl.UNSIGNED_INT, 0);
+    var mode = gl.TRIANGLES;
+    if(this.wireframe) {
+      mode = gl.LINES
+    }
+    gl.drawElements(mode, this.terrainIndices.length, gl.UNSIGNED_INT, 0);
   }
 }
 

@@ -16,45 +16,26 @@ gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
 
 const params = {
   noise: 0.15,
-  size: 200,
+  size: 300,
   amplitude: 0.00001,
   wind: 10.0,
   speed: 0.1,
+  wireframe: false,
   _renderer: null,
 };
 
 params._renderer = new Renderer(scene, params);
 
-function setPerlinNoise(noise) {
-  params.noise = noise;
+function updateRenderer() {
   params._renderer = new Renderer(scene, params);
 }
 
-function setOceanSize(size) {
-  params.size = size;
-  params._renderer = new Renderer(scene, params);
-}
-
-function setAmplitude(amplitude) {
-  params.amplitude = amplitude;
-  params._renderer = new Renderer(scene, params);
-}
-
-function setWind(wind) {
-  params.wind = wind;
-  params._renderer = new Renderer(scene, params);
-}
-
-function setSpeed(speed) {
-  params.speed = speed;
-  params._renderer = new Renderer(scene, params);
-}
-
-gui.add(params, 'noise', 0.0, 1.0).onChange(setPerlinNoise);
-gui.add(params, 'size', 1, 1000).onChange(setOceanSize);
-gui.add(params, 'amplitude', .000001, .00005).onChange(setAmplitude);
-gui.add(params, 'wind', 1, 100).onChange(setWind);
-gui.add(params, 'speed', 0.001, 1).onChange(setSpeed);
+// gui.add(params, 'noise', 0.0, 0.3).onChange(setPerlinNoise);
+// gui.add(params, 'size', 1, 1000).onChange(setOceanSize);
+gui.add(params, 'amplitude', .000001, .00005).onChange(updateRenderer);
+gui.add(params, 'wind', 1, 100).onChange(updateRenderer);
+gui.add(params, 'speed', 0.001, 0.3).onChange(updateRenderer);
+gui.add(params, 'wireframe').onChange(updateRenderer);
 
 function render() {
   scene.update();
