@@ -20,7 +20,7 @@ export default function(params) {
     
     vec3 fragColor = vec3(0.0);
 
-    vec3 lightDir = normalize(vec3(0, 75, 5) - pos);
+    vec3 lightDir = normalize(vec3(0, 75, -5) - pos);
     float NdotL = clamp(dot(normal, lightDir), 0.1, 1.0);
 
     mat4 invViewMatrix = inverse(u_viewMatrix);
@@ -40,7 +40,7 @@ export default function(params) {
     float fresnel = R_0 + (1.0 - R_0) * pow(1.0 - dot, 5.0);
     
     fragColor += (fresnel + 0.1) * vec3(texture(skybox, v_R)) + (1.0 - fresnel) * darkBlue;
-    v_color = vec4(fragColor, 0.90);
+    v_color = vec4(fragColor, 0.9);
   }
   `;
 }

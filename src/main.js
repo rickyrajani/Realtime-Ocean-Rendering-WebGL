@@ -22,6 +22,7 @@ const params = {
   speed: 0.1,
   choppiness: 1.0,
   wireframe: false,
+  terrain: false,
   _renderer: null,
 };
 
@@ -31,13 +32,12 @@ function updateRenderer() {
   params._renderer = new Renderer(scene, params);
 }
 
-// gui.add(params, 'noise', 0.0, 0.3).onChange(setPerlinNoise);
-// gui.add(params, 'size', 1, 1000).onChange(setOceanSize);
 gui.add(params, 'amplitude', .0001, .0009).onChange(updateRenderer);
 gui.add(params, 'wind', 1, 100).onChange(updateRenderer);
 gui.add(params, 'speed', 0.001, 0.3).onChange(updateRenderer);
 gui.add(params, 'choppiness', 0.01, 2).onChange(updateRenderer);
 gui.add(params, 'wireframe').onChange(updateRenderer);
+gui.add(params, 'terrain').onChange(updateRenderer);
 
 function render() {
   scene.update();

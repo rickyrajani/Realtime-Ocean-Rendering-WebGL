@@ -14,7 +14,7 @@ export default function(params) {
   
       vec3 fragColor = vec3(0.0);
   
-      vec3 lightDir = normalize(vec3(1, 50, -5) - pos);
+      vec3 lightDir = normalize(vec3(0, 65, -100) - pos);
       float NdotL = clamp(dot(normal, lightDir), 0.2, 0.7);
       fragColor += albedo * NdotL;
   
