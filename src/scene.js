@@ -22,8 +22,6 @@ class Scene {
     this.OCEAN_RESOLUTION = 512.0;
     this.vertices = [];
     this.indices = [];
-    this.heightMap = [];
-    this.w = [];
     
     this.TERRAIN_RESOLUTION = 256.0;
     this.terrainVertices = [];
@@ -32,8 +30,6 @@ class Scene {
     this.OCEAN_LOW_RES = 128.0;
     this.verticesLowRes = [];
     this.indicesLowRes = [];
-    this.heightMapLowRes = [];
-    this.wLowRes = [];
 
     this.patches = [];
   }
@@ -77,7 +73,6 @@ class Scene {
     // Bind indices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferTerrain);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.terrainIndices), gl.STATIC_DRAW);
-
   }
   
   createBuffers() {
@@ -168,87 +163,6 @@ class Scene {
     // Bind ocean vertex indices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferLowRes);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indicesLowRes), gl.STATIC_DRAW);
-
-
-  }
-
-  createHeightMapBuffers() {
-    this.heightMap = [];
-    this.w = [];
-    for (let z = 0; z < this.OCEAN_RESOLUTION; z++) {
-      for (let x = 0; x < this.OCEAN_RESOLUTION; x++) {
-        var xPos = (x * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
-        var zPos = (z * this.OCEAN_SIZE)/ (this.OCEAN_RESOLUTION - 1) - this.OCEAN_SIZE/2.0;
-        
-        var u_L = this.OCEAN_SIZE;
-        var u_V = 10.0;
-        var u_A = this.amplitude;
-
-        var n = xPos;// + this.OCEAN_SIZE/2.0;
-        var m = zPos;// + this.OCEAN_SIZE/2.0;
-        var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);
-        var lengthK = k.length();
-    
-        // largest possible waves arising from a continuous wind of speed
-        var L = u_V * u_V / g;
-        var k_Nor = k.normalize();
-        var kDotWind = k_Nor.dot(this.wind.normalize());
-        var cosP = kDotWind;
-        var temp = L * lengthK;
-        var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, -4.0) * cosP * cosP;
-    
-        var wl = L / 10000.0;
-        P *= Math.exp(lengthK * lengthK *  (wl* wl));
-    
-        var h_0 = this.getH_0(k, P);
-        var h_0_star = this.getH_0(-k, P);
-        var w = Math.sqrt(g * lengthK);
-        this.heightMap.push(h_0.x);
-        this.heightMap.push(h_0.y);
-        this.heightMap.push(h_0_star.x);
-        this.heightMap.push(h_0_star.y);
-        this.w.push(w);              
-      }
-    }
-  }
-
-  createHeightMapLowResBuffers() {
-    this.heightMapLowRes = [];
-    this.wLowRes = [];
-    for (let z = 0; z < this.OCEAN_LOW_RES; z++) {
-      for (let x = 0; x < this.OCEAN_LOW_RES; x++) {
-        var xPos = (x * this.OCEAN_SIZE)/ (this.OCEAN_LOW_RES - 1) - this.OCEAN_SIZE/2.0;
-        var zPos = (z * this.OCEAN_SIZE)/ (this.OCEAN_LOW_RES - 1) - this.OCEAN_SIZE/2.0;
-        var u_L = this.OCEAN_SIZE;
-        var u_V = 10.0;
-        var u_A = this.amplitude;
-
-        var n = xPos + this.OCEAN_SIZE/2.0;
-        var m = zPos + this.OCEAN_SIZE/2.0;
-        var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);
-        var lengthK = k.length();
-    
-        // largest possible waves arising from a continuous wind of speed
-        var L = u_V * u_V / g;
-        var k_Nor = k.normalize();
-        var kDotWind = k_Nor.dot(this.wind.normalize());
-        var cosP = kDotWind;
-        var temp = L * lengthK;
-        var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, -4.0) * cosP * cosP;
-    
-        var wl = L / 10000.0;
-        P *= Math.exp(lengthK * lengthK *  (wl* wl));
-    
-        var h_0 = this.getH_0(k, P);
-        var h_0_star = this.getH_0(-k, P);
-        var w = Math.sqrt(g * lengthK);
-        this.heightMapLowRes.push(h_0.x);
-        this.heightMapLowRes.push(h_0.y);
-        this.heightMapLowRes.push(h_0_star.x);
-        this.heightMapLowRes.push(h_0_star.y);
-        this.wLowRes.push(w);              
-      }
-    }
   }
 
   createSkybox() {
@@ -389,13 +303,11 @@ class Scene {
 
       // Bind ocean vertex positions
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
       gl.enableVertexAttribArray(shaderProgram.a_position);
       gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
 
       // Bind ocean vertex indices
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBuffer);
-      // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW);
 
       var mode = gl.TRIANGLES;
       if(this.wireframe) {
@@ -406,15 +318,12 @@ class Scene {
   }
 
   drawOceanLowRes(shaderProgram, count) {
-    
     let start = this.OCEAN_LOW_RES * this.OCEAN_LOW_RES * 3 * count;
     let end = start + (this.OCEAN_LOW_RES * this.OCEAN_LOW_RES * 3);
     let verticesPatch = this.verticesLowRes.slice(start, end);
     var vertexBuffer = this.patches[count];
-    // console.log(count, vertexBuffer);
-    // debugger;
+
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-   // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesPatch), gl.STATIC_DRAW); 
     gl.enableVertexAttribArray(shaderProgram.a_position);
     gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);
     
@@ -429,10 +338,8 @@ class Scene {
   bindOceanLowResBuffers(shaderProgram) {
     if (this._texID) {
       // Ocean water plane
-
       // Bind ocean vertex indices
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferLowRes);
-      // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indicesLowRes), gl.STATIC_DRAW);
     }
   }
 
@@ -447,7 +354,6 @@ class Scene {
 
     // Bind indices
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferTerrain);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.terrainIndices), gl.STATIC_DRAW);
 
     var mode = gl.TRIANGLES;
     if(this.wireframe) {
