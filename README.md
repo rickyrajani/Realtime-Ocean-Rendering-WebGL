@@ -16,6 +16,13 @@ implemented view-dependent geometry wave geometry that has lower detail as we mo
 
 We also implemented procedural terrain using perlin noise in order to provide a sense of perspective to the ocean scene.
 
+### Key Features
+
+* FFT Height Map
+* View Dependent Wave Geometry
+* Lighting
+* Procedural Terrain
+
 ### Milestone 1
 ![](screenshots/screenshot1.png)
 ![](screenshots/screenshot3.png)
