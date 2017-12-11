@@ -1,13 +1,24 @@
 # Realtime-Ocean-Rendering-WebGL
 
+![](screenshots/Capture512.PNG)
+
 Members: Wenli Zhao, Ricky Rajani
 
-We will be implementing the paper [Realistic Real-time Rendering of Ocean Waves](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/12/rtwave.pdf) in WebGL. 
+In this project, we implemented realistic realtime ocean wave rendering in WebGL 2.0, referencing [Realistic Real-time Rendering of Ocean Waves](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/12/rtwave.pdf) and Simulating Ocean Water (Tessendorf 2001). 
 
 Overview:
-In computer games and other real-time graphics applications, the ocean surface is typically modeled as a texture or bump-mapped plane with simple lighting effects, while realistic wave geometry and sophisticated lighting effects such as reflection, refraction and Fresnel effects are ignored. The paper above describes a method for implementing real-time realistic rendering of a water surface. Our goal is to implement this technique for the web.
+We implemented realistic waves by generating a heightfield using Fast Fourier Transformations and a realistic lighting model which includes reflection, refraction, and alpha blending. In order to have an expansive ocean render in real-time, we
+implemented view-dependent geometry wave geometry that has lower detail as we move away from the center of the ocean.
 
-The system is based on two key ideas. The first is Fresnel bump mapping, which is a technique for efficiently rendering per-pixel Fresnel reflection and refraction on a dynamic bump map using graphics hardware. The accurate rendering of Fresnel effects on a dynamic bump map plays a critical role in recreating the look and feel of the ocean water. The second idea is a view-dependent representation of wave geometry. This representation can realistically describe geometry of nearby waves, while efficiently handling distant waves.
+We also implemented procedural terrain using perlin noise in order to provide a sense of perspective to the ocean scene.
+
+### Milestone 1
+
+### Milestone 2
+
+### Milestone 3
+
+### Milestone 4
 
 ### Credits
 
