@@ -23,7 +23,7 @@ We also implemented procedural terrain using perlin noise in order to provide a 
 ### Milestone 3
 ![](screenshots/Capture.PNG)
 ![](screenshots/Capture3.PNG)
-![](screenshots/Capture3.PNG)
+![](screenshots/Capture4.PNG)
 
 ### Milestone 4
 ![](screenshots/Capture1024.PNG)
