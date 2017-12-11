@@ -12,7 +12,7 @@ Members:
 In this project, we implemented realistic real-time ocean wave rendering in WebGL 2.0, referencing [Realistic Real-time Rendering of Ocean Waves](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/12/rtwave.pdf) and Simulating Ocean Water (Tessendorf 2001). 
 
 We implemented realistic waves by generating a heightfield using Fast Fourier Transformations and a realistic lighting model which includes reflection, refraction, and alpha blending. In order to have an expansive ocean render in real-time, we
-implemented view-dependent geometry wave geometry that has lower detail as we move away from the center of the ocean.
+implemented view-dependent geometry that has lower detail as we move away from the center of the ocean.
 
 We also implemented procedural terrain using perlin noise in order to provide a sense of perspective to the ocean scene.
 
@@ -45,7 +45,7 @@ We also implemented procedural terrain using perlin noise in order to provide a 
 ### Performance Analysis
 ![](screenshots/chart1.png)
 
-Our first major optimization was view-dependent geometry. In our scene, we construct the ocean plane as a square mesh. Our view-dependent geometry breaks this mesh down into nine square patches. The center patch of the ocean has a higher resolution and the surrounding patches are rendered at a lower resolution. In order to determine the performance gain from view-dependent geometry, we rendered the ocean at a high resolution for the entierty of the plane and compared it to a view-dependent construction. There was a significant performance gain as you can see in the graph above. As the resolution increased, the performance gain decreases.
+Our first major optimization was view-dependent geometry. In our scene, we construct the ocean plane as a square mesh. Our view-dependent geometry breaks this mesh down into nine square patches. The center patch of the ocean has a higher resolution and the surrounding patches are rendered at a lower resolution. In order to determine the performance gain from view-dependent geometry, we rendered the ocean at a high resolution for the entirety of the plane and compared it to a view-dependent construction. There was a significant performance gain as you can see in the graph above. As the resolution increased, the performance gain decreases.
 
 ![](screenshots/chart2.png)
 
