@@ -87,7 +87,6 @@ export default class Renderer {
     gl.uniform1f(this._shaderProgramOcean.u_A, scene.amplitude);
     gl.uniform1f(this._shaderProgramOcean.u_V, this._wind);
     gl.uniform1f(this._shaderProgramOcean.u_choppiness, this._choppiness);
-    scene.loadTexture();
     scene.drawOcean(this._shaderProgramOcean);
 
     gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_LOW_RES);

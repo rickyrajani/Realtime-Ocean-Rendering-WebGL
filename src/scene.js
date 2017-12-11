@@ -113,7 +113,6 @@ class Scene {
 
   createPatchBuffers() {
     this.verticesLowRes = [];
-
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         for (let z = 0; z < this.OCEAN_LOW_RES; z++) {
@@ -245,22 +244,16 @@ class Scene {
   }
 
   drawSkybox(shaderProgram) {
-    if(this._texID) {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.model.coordsBuffer);
       gl.enableVertexAttribArray(shaderProgram.a_coords);
       gl.vertexAttribPointer(shaderProgram.a_coords, 3, gl.FLOAT, false, 0, 0);
       
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.model.indexBuffer);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.modelData.indices), gl.STATIC_DRAW);
   
       gl.drawElements(gl.TRIANGLES, this.model.count, gl.UNSIGNED_SHORT, 0);
-    }
   }
 
   drawOcean(shaderProgram) {
-    if (this._texID) {
-      // Ocean water plane
-
       // Bind ocean vertex positions
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
       gl.enableVertexAttribArray(shaderProgram.a_position);
@@ -274,7 +267,6 @@ class Scene {
         mode = gl.LINES
       }
       gl.drawElements(mode, this.indices.length, gl.UNSIGNED_INT, 0);
-    }
   }
 
   drawOceanLowRes(shaderProgram, count) {
@@ -297,16 +289,12 @@ class Scene {
 
   bindOceanLowResBuffers(shaderProgram) {
     if (this._texID) {
-      // Ocean water plane
       // Bind ocean vertex indices
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferLowRes);
     }
   }
 
   drawTerrain(shaderProgram) {
-    if (this._texID) {
-    // Terrain plane
-    
     // Bind vertex positions
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBufferTerrain);
     gl.enableVertexAttribArray(shaderProgram.a_position);
@@ -320,7 +308,6 @@ class Scene {
       mode = gl.LINES
     }
     gl.drawElements(mode, this.terrainIndices.length, gl.UNSIGNED_INT, 0);
-  }
 }
 
 }
