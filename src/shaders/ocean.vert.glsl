@@ -90,21 +90,23 @@ vec2 getHeightField(vec3 pos) {
 void main() {
     vec3 a = a_position;
     float scale = 10.0;
+    float random = rand(vec2(a.x, a.z * u_time));
+    float waveDisplacement = 1.5 * sin(0.07*(a.x + 10.0 * u_time)) * cos(0.06*(a.z + random * u_time));
     
     float delta = u_L/float(u_resolution);
     vec2 a_delta = getHeightField(a);
     float y = a_delta.x + 55.0;
-    a.y = y;
+    a.y = y + waveDisplacement;
     a.x += a_delta.y;
 
     vec3 b = vec3(a_position.x + delta, a_position.y, a_position.z);
     vec2 b_delta = getHeightField(b);
-    b.y = b_delta.x + 55.0;
+    b.y = b_delta.x + 55.0 + waveDisplacement;
     b.x += b_delta.y;
 
     vec3 c = vec3(a_position.x, a_position.y, a_position.z + delta);		
     vec2 c_delta = getHeightField(c);
-    c.y = c_delta.x + 55.0;	
+    c.y = c_delta.x + 55.0 + waveDisplacement;
     c.x += c_delta.y;
 
     vec3 dir = normalize(cross((b - a), (c - a)));

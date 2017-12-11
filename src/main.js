@@ -17,9 +17,9 @@ gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
 const params = {
   noise: 0.15,
   size: 300,
-  amplitude: 0.00001,
+  amplitude: 0.0001,
   wind: 10.0,
-  speed: 0.05,
+  speed: 0.1,
   choppiness: 1.0,
   wireframe: false,
   _renderer: null,
@@ -33,7 +33,7 @@ function updateRenderer() {
 
 // gui.add(params, 'noise', 0.0, 0.3).onChange(setPerlinNoise);
 // gui.add(params, 'size', 1, 1000).onChange(setOceanSize);
-gui.add(params, 'amplitude', .000001, .00005).onChange(updateRenderer);
+gui.add(params, 'amplitude', .0001, .0009).onChange(updateRenderer);
 gui.add(params, 'wind', 1, 100).onChange(updateRenderer);
 gui.add(params, 'speed', 0.001, 0.3).onChange(updateRenderer);
 gui.add(params, 'choppiness', 0.01, 2).onChange(updateRenderer);

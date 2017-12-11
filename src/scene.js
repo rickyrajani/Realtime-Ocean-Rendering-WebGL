@@ -19,7 +19,7 @@ class Scene {
     this.wind = new Vector2(1.0, 1.0);
     this.amplitude = 0.00001;
 
-    this.OCEAN_RESOLUTION = 512.0;
+    this.OCEAN_RESOLUTION = 256.0;
     this.vertices = [];
     this.indices = [];
     this.heightMap = [];

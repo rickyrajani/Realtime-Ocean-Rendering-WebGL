@@ -68,11 +68,11 @@ export default class Renderer {
     scene.loadTexture();
     scene.drawSkybox(this._shaderProgramSkybox);
 
-    // Draw the terrain
-    gl.useProgram(this._shaderProgramTerrain.glShaderProgram);
-    gl.uniformMatrix4fv(this._shaderProgramTerrain.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
-    gl.uniform1f(this._shaderProgramTerrain.u_noise, this._noise);
-    scene.drawTerrain(this._shaderProgramTerrain);
+    // // Draw the terrain
+    // gl.useProgram(this._shaderProgramTerrain.glShaderProgram);
+    // gl.uniformMatrix4fv(this._shaderProgramTerrain.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
+    // gl.uniform1f(this._shaderProgramTerrain.u_noise, this._noise);
+    // scene.drawTerrain(this._shaderProgramTerrain);
     
     // Draw the ocean
     gl.useProgram(this._shaderProgramOcean.glShaderProgram);
