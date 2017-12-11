@@ -1,7 +1,6 @@
 #version 300 es
 precision highp float;
 
-
 const float PI = 3.14159265359;
 const float g = 9.81;
 const vec2 wind = vec2(1.0, 1.0);
@@ -18,8 +17,8 @@ uniform vec3 u_cameraPos;
 uniform float u_choppiness;
 
 in vec3 a_position;
-in vec4 a_heightMap;
-in float a_w;
+// in vec4 a_heightMap;
+// in float a_w;
 
 out vec3 v_position;
 out vec3 v_normal;
@@ -53,23 +52,30 @@ vec2 getH_0 (vec2 k, float P) {
     float r1 = rand(vec2(k.x, k.y)) * 2.0 - 1.0;
     float r2 = rand(vec2((mod(k.y * r1, 11.0), mod(k.x, 17.0)))) * 2.0 - 1.0;
 
-    float rand1 = gausRand(r1, r2);
-    float rand2 = gausRand(r2, r1);
-
-    return vec2( 1.0 / pow (2.0, 0.5) * rand1 * sqrt(P), 1.0 / sqrt(2.0) * rand2 * pow(P, 0.5));
+    return vec2( 1.0 / pow (2.0, 0.5) * r1 * sqrt(P), 1.0 / sqrt(2.0) * r2 * pow(P, 0.5));
 }
 
 // first value is heightfield, second is x displacement
 vec2 getHeightField(vec3 pos) {
-
     float n = pos.x;
     float m = pos.z;
     vec2 k = vec2(2.0 * PI * n / u_L, 2.0 * PI * m / u_L);
+    float lengthK = length(k);
 
-    vec2 h_0 = vec2(a_heightMap.x, a_heightMap.y);
-    vec2 h_0_star = vec2(a_heightMap.z, a_heightMap.w);
+    // largest possible waves arising from a continuous wind of speed
+    float L = u_V * u_V / g;
 
-    float w = a_w;
+    float cosP = length(dot (normalize(k), normalize(wind)));
+    float temp = lengthK * L;
+    float P = u_A * exp( -1.0 / (temp * temp)) * pow(lengthK, -4.0) * cosP * cosP;
+
+    float wl = L / 10000.0;
+    P *= exp(lengthK * lengthK * (wl * wl));
+
+    vec2 h_0 = getH_0(k, P);
+    vec2 h_0_star = getH_0(-k, P);
+
+    float w = sqrt(g * lengthK);
 
     vec2 h_01 = complexProduct(h_0, complexExp( w * u_time));
     vec2 h_0_star1 = complexProduct(h_0_star, complexExp(-w * u_time));
@@ -82,7 +88,7 @@ vec2 getHeightField(vec3 pos) {
     vec2 k_normalized = normalize(k);
 
     float lambda = u_choppiness;
-    vec2 d_x_t = lambda * complexProduct(-k_normalized, vec2(h_x_t.y, h_x_t.x));
+    vec2 d_x_t = lambda * clamp( complexProduct(-k_normalized, vec2(h_x_t.y, h_x_t.x)), 0.0,0.3);
 
     return vec2(h_x_t.x, d_x_t.x);
 }

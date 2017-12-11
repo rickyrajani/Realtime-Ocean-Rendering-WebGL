@@ -42,8 +42,8 @@ export default class Renderer {
     scene.amplitude = params.amplitude;
     scene.createBuffers();
     scene.createPatchBuffers();    
-    scene.createHeightMapBuffers();
-    scene.createHeightMapLowResBuffers();
+    //scene.createHeightMapBuffers();
+    //scene.createHeightMapLowResBuffers();
     scene.createTerrainBuffers();
   }
 

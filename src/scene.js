@@ -345,17 +345,17 @@ class Scene {
       gl.enableVertexAttribArray(shaderProgram.a_position);
       gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
 
-      // bind heightMap
-      gl.bindBuffer(gl.ARRAY_BUFFER, heightMapBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.heightMap), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(shaderProgram.a_heightMap);
-      gl.vertexAttribPointer(shaderProgram.a_heightMap, 4, gl.FLOAT, false, 4 * FLOAT_SIZE, 0);  
+      // // bind heightMap
+      // gl.bindBuffer(gl.ARRAY_BUFFER, heightMapBuffer);
+      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.heightMap), gl.STATIC_DRAW);
+      // gl.enableVertexAttribArray(shaderProgram.a_heightMap);
+      // gl.vertexAttribPointer(shaderProgram.a_heightMap, 4, gl.FLOAT, false, 4 * FLOAT_SIZE, 0);  
 
-      // bind w?
-      gl.bindBuffer(gl.ARRAY_BUFFER, wBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.w), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(shaderProgram.a_w);
-      gl.vertexAttribPointer(shaderProgram.a_w, 1, gl.FLOAT, false, FLOAT_SIZE, 0);  
+      // // bind w?
+      // gl.bindBuffer(gl.ARRAY_BUFFER, wBuffer);
+      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.w), gl.STATIC_DRAW);
+      // gl.enableVertexAttribArray(shaderProgram.a_w);
+      // gl.vertexAttribPointer(shaderProgram.a_w, 1, gl.FLOAT, false, FLOAT_SIZE, 0);  
 
       // Bind ocean vertex indices
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
@@ -395,17 +395,17 @@ class Scene {
       var heightMapBuffer = gl.createBuffer();
       var wBuffer = gl.createBuffer();
 
-      // bind heightMap
-      gl.bindBuffer(gl.ARRAY_BUFFER, heightMapBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.heightMapLowRes), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(shaderProgram.a_heightMap);
-      gl.vertexAttribPointer(shaderProgram.a_heightMap, 4, gl.FLOAT, false, 4 * FLOAT_SIZE, 0);  
+      // // bind heightMap
+      // gl.bindBuffer(gl.ARRAY_BUFFER, heightMapBuffer);
+      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.heightMapLowRes), gl.STATIC_DRAW);
+      // gl.enableVertexAttribArray(shaderProgram.a_heightMap);
+      // gl.vertexAttribPointer(shaderProgram.a_heightMap, 4, gl.FLOAT, false, 4 * FLOAT_SIZE, 0);  
 
-      // bind w?
-      gl.bindBuffer(gl.ARRAY_BUFFER, wBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.wLowRes), gl.STATIC_DRAW);
-      gl.enableVertexAttribArray(shaderProgram.a_w);
-      gl.vertexAttribPointer(shaderProgram.a_w, 1, gl.FLOAT, false, FLOAT_SIZE, 0);  
+      // // bind w?
+      // gl.bindBuffer(gl.ARRAY_BUFFER, wBuffer);
+      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.wLowRes), gl.STATIC_DRAW);
+      // gl.enableVertexAttribArray(shaderProgram.a_w);
+      // gl.vertexAttribPointer(shaderProgram.a_w, 1, gl.FLOAT, false, FLOAT_SIZE, 0);  
 
       // Bind ocean vertex indices
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
