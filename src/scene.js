@@ -34,6 +34,8 @@ class Scene {
     this.indicesLowRes = [];
     this.heightMapLowRes = [];
     this.wLowRes = [];
+
+    this.patches = [];
   }
 
   update() {
@@ -65,6 +67,17 @@ class Scene {
         this.terrainIndices.push(UL);
       }
     }
+    this.vertexBufferTerrain = gl.createBuffer();
+    this.indicesBufferTerrain = gl.createBuffer();
+
+    // Bind vertex positions
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBufferTerrain);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.terrainVertices), gl.STATIC_DRAW);
+
+    // Bind indices
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferTerrain);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.terrainIndices), gl.STATIC_DRAW);
+
   }
   
   createBuffers() {
@@ -135,6 +148,28 @@ class Scene {
         this.indicesLowRes.push(UL);
       }
     }
+
+    for (let i = 0; i < 9; i++) {
+      if (i == 4) {
+        this.patches.push(undefined);
+        continue;
+      }
+      let start = this.OCEAN_LOW_RES * this.OCEAN_LOW_RES * 3 * i;
+      let end = start + (this.OCEAN_LOW_RES * this.OCEAN_LOW_RES * 3);
+      let verticesPatch = this.verticesLowRes.slice(start, end);
+      var vertexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesPatch), gl.STATIC_DRAW);          
+      this.patches.push(vertexBuffer);
+    }
+
+    this.indicesBufferLowRes = gl.createBuffer();
+    
+    // Bind ocean vertex indices
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferLowRes);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indicesLowRes), gl.STATIC_DRAW);
+
+
   }
 
   createHeightMapBuffers() {
@@ -214,6 +249,20 @@ class Scene {
         this.wLowRes.push(w);              
       }
     }
+  }
+
+  createSkybox() {
+    this.modelData = this.skybox(1000);
+    this.model = {};
+    this.model.coordsBuffer = gl.createBuffer();
+    this.model.indexBuffer = gl.createBuffer();
+    this.model.count = this.modelData.indices.length;
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.model.coordsBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.modelData.vertexPositions), gl.STATIC_DRAW);
+    
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.model.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.modelData.indices), gl.STATIC_DRAW);
   }
 
   skybox(side) {
@@ -322,31 +371,21 @@ class Scene {
 
   drawSkybox(shaderProgram) {
     if(this._texID) {
-      var modelData = this.skybox(1000);
-      var model = {};
-      model.coordsBuffer = gl.createBuffer();
-      model.indexBuffer = gl.createBuffer();
-      model.count = modelData.indices.length;
-      
-      gl.bindBuffer(gl.ARRAY_BUFFER, model.coordsBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(modelData.vertexPositions), gl.STATIC_DRAW);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.model.coordsBuffer);
+      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.modelData.vertexPositions), gl.STATIC_DRAW);
       gl.enableVertexAttribArray(shaderProgram.a_coords);
       gl.vertexAttribPointer(shaderProgram.a_coords, 3, gl.FLOAT, false, 0, 0);
       
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBuffer);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(modelData.indices), gl.STATIC_DRAW);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.model.indexBuffer);
+      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.modelData.indices), gl.STATIC_DRAW);
   
-      gl.drawElements(gl.TRIANGLES, model.count, gl.UNSIGNED_SHORT, 0);
+      gl.drawElements(gl.TRIANGLES, this.model.count, gl.UNSIGNED_SHORT, 0);
     }
   }
 
   drawOcean(shaderProgram) {
     if (this._texID) {
       // Ocean water plane
-      // var vertexBuffer = gl.createBuffer();
-      // var indicesBuffer = gl.createBuffer();
-      // var heightMapBuffer = gl.createBuffer();
-      // var wBuffer = gl.createBuffer();
 
       // Bind ocean vertex positions
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
@@ -354,21 +393,9 @@ class Scene {
       gl.enableVertexAttribArray(shaderProgram.a_position);
       gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
 
-      // // bind heightMap
-      // gl.bindBuffer(gl.ARRAY_BUFFER, heightMapBuffer);
-      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.heightMap), gl.STATIC_DRAW);
-      // gl.enableVertexAttribArray(shaderProgram.a_heightMap);
-      // gl.vertexAttribPointer(shaderProgram.a_heightMap, 4, gl.FLOAT, false, 4 * FLOAT_SIZE, 0);  
-
-      // // bind w?
-      // gl.bindBuffer(gl.ARRAY_BUFFER, wBuffer);
-      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.w), gl.STATIC_DRAW);
-      // gl.enableVertexAttribArray(shaderProgram.a_w);
-      // gl.vertexAttribPointer(shaderProgram.a_w, 1, gl.FLOAT, false, FLOAT_SIZE, 0);  
-
       // Bind ocean vertex indices
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBuffer);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW);
+      // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW);
 
       var mode = gl.TRIANGLES;
       if(this.wireframe) {
@@ -379,14 +406,15 @@ class Scene {
   }
 
   drawOceanLowRes(shaderProgram, count) {
-    var vertexBuffer = gl.createBuffer();
     
     let start = this.OCEAN_LOW_RES * this.OCEAN_LOW_RES * 3 * count;
     let end = start + (this.OCEAN_LOW_RES * this.OCEAN_LOW_RES * 3);
     let verticesPatch = this.verticesLowRes.slice(start, end);
-
+    var vertexBuffer = this.patches[count];
+    // console.log(count, vertexBuffer);
+    // debugger;
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesPatch), gl.STATIC_DRAW);
+   // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesPatch), gl.STATIC_DRAW); 
     gl.enableVertexAttribArray(shaderProgram.a_position);
     gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);
     
@@ -394,48 +422,31 @@ class Scene {
     if(this.wireframe) {
       mode = gl.LINES
     }
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferLowRes);
     gl.drawElements(mode, this.indicesLowRes.length, gl.UNSIGNED_INT, 0);
   }
 
   bindOceanLowResBuffers(shaderProgram) {
     if (this._texID) {
       // Ocean water plane
-      var indicesBuffer = gl.createBuffer();
-      var heightMapBuffer = gl.createBuffer();
-      var wBuffer = gl.createBuffer();
-
-      // // bind heightMap
-      // gl.bindBuffer(gl.ARRAY_BUFFER, heightMapBuffer);
-      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.heightMapLowRes), gl.STATIC_DRAW);
-      // gl.enableVertexAttribArray(shaderProgram.a_heightMap);
-      // gl.vertexAttribPointer(shaderProgram.a_heightMap, 4, gl.FLOAT, false, 4 * FLOAT_SIZE, 0);  
-
-      // // bind w?
-      // gl.bindBuffer(gl.ARRAY_BUFFER, wBuffer);
-      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.wLowRes), gl.STATIC_DRAW);
-      // gl.enableVertexAttribArray(shaderProgram.a_w);
-      // gl.vertexAttribPointer(shaderProgram.a_w, 1, gl.FLOAT, false, FLOAT_SIZE, 0);  
 
       // Bind ocean vertex indices
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indicesLowRes), gl.STATIC_DRAW);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferLowRes);
+      // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indicesLowRes), gl.STATIC_DRAW);
     }
   }
 
   drawTerrain(shaderProgram) {
     if (this._texID) {
     // Terrain plane
-    var vertexBuffer = gl.createBuffer();
-    var indicesBuffer = gl.createBuffer();
-
+    
     // Bind vertex positions
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.terrainVertices), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBufferTerrain);
     gl.enableVertexAttribArray(shaderProgram.a_position);
     gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
 
     // Bind indices
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferTerrain);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.terrainIndices), gl.STATIC_DRAW);
 
     var mode = gl.TRIANGLES;

@@ -42,9 +42,9 @@ export default class Renderer {
     scene.amplitude = params.amplitude;
     scene.createBuffers();
     scene.createPatchBuffers();    
-    //scene.createHeightMapBuffers();
-    //scene.createHeightMapLowResBuffers();
     scene.createTerrainBuffers();
+    scene.loadTexture();
+    scene.createSkybox();
   }
 
   render(camera, scene) {
@@ -66,7 +66,7 @@ export default class Renderer {
     // Draw the skybox
     gl.useProgram(this._shaderProgramSkybox.glShaderProgram);
     gl.uniformMatrix4fv(this._shaderProgramSkybox.u_viewProjectionMatrix, false, this._viewProjectionMatrix);
-    scene.loadTexture();
+    // scene.loadTexture();
     scene.drawSkybox(this._shaderProgramSkybox);
 
     // Draw the terrain
