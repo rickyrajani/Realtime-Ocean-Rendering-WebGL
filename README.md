@@ -44,8 +44,9 @@ Our first major optimization was view-dependent geometry. In our scene, we const
 
 Our next attempted optimization was moving the calculation of the Phillips spectrum from the GPU to a preprocessing step on the CPU. The calculation of the Phillips spectrum included sampling random Gaussian distributions for two numbers and a number of exponential calculations that we thought would be costly on the GPU. Since the values only needed to be computed once for each point in the mesh, we thought that it would be faster as a preprocessing step. As you can see in the graph above, it was not a significant performance improvement. In some cases, the preprocessing took longer. This led us to look into our construction of the buffers.
 
-We soon realized that we were creating some of our buffers and filling them for every frame, which was terrible for performance. After fixing up the creation of our buffers, we had a huge performance gain.
+We soon realized that we were creating some of our buffers and filling them for every frame, which was terrible for performance. After fixing up the creation of our buffers, we had a huge performance gain. For all resolutions up to and including 2048, we had a frame rate of greater than 60 fps.
 
+Tested on: Windows 10 Pro, Intel Xeon CPU CPU E5-1630 v4 @ 3.70GHz 32GB, NVIDIA GeForce GTX 24465MB 
 
 ### Credits
 
