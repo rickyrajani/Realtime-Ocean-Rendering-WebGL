@@ -59,23 +59,9 @@ vec2 getH_0 (vec2 k, float P) {
 }
 
 float getHeightField(vec3 pos) {
-
     float n = pos.x;
     float m = pos.z;
     vec2 k = vec2(2.0 * PI * n / u_L, 2.0 * PI * m / u_L);
-    /*
-    float lengthK = length(k);
-
-    // largest possible waves arising from a continuous wind of speed
-    float L = u_V * u_V / g;
-
-    float cosP = length(dot (normalize(k), normalize(wind)));
-    float temp = lengthK * L;
-    float P = u_A * exp( -1.0 / (temp * temp)) * pow(lengthK, 4.0) * cosP * cosP;
-
-    float wl = L / 10000.0;
-    P *= exp(lengthK * lengthK * (wl * wl));
-    */
 
     vec2 h_0 = vec2(a_heightMap.x, a_heightMap.y);
     vec2 h_0_star = vec2(a_heightMap.z, a_heightMap.w);
@@ -94,30 +80,18 @@ float getHeightField(vec3 pos) {
 
 void main() {
     vec3 a = a_position;
+    float scale = 10.0;
     
     float delta = u_L/float(u_resolution);
-    float y = getHeightField(a) + 55.0;
+    float y = scale * clamp(getHeightField(a), 0.0, 0.75) + 55.0;
     a.y = y;
 
     vec3 b = vec3(a_position.x + delta, a_position.y, a_position.z);
-    b.y = getHeightField(b) + 55.0;
+    b.y = scale * clamp(getHeightField(b), 0.0, 0.75) + 55.0;
 
     vec3 c = vec3(a_position.x, a_position.y, a_position.z + delta);		
-    c.y = getHeightField(c) + 55.0;	
-/*
-    vec3 d = vec3(a_position.x - delta, a_position.y, a_position.z);		
-    d.y = getHeightField(c) + 55.0;	
+    c.y = scale * clamp(getHeightField(c), 0.0, 0.75) + 55.0;	
 
-    vec3 e = vec3(a_position.x, a_position.y, a_position.z - delta);		
-    e.y = getHeightField(c) + 55.0;	
-
-    vec3 norm1 = normalize(cross((b - a), (c - a)));
-    vec3 norm2 = normalize(cross((c - a), (d - a)));
-    vec3 norm3 = normalize(cross((d - a), (e - a)));
-    vec3 norm4 = normalize(cross((e - a), (b - a)));
-
-    v_normal = (norm1 + norm2 + norm3 + norm4)/4.0;
-*/
     vec3 dir = normalize(cross((b - a), (c - a)));
     v_normal = dir;
 

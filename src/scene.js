@@ -140,8 +140,8 @@ class Scene {
         var u_V = 10.0;
         var u_A = this.amplitude;
 
-        var n = xPos + this.OCEAN_SIZE/2.0;
-        var m = zPos + this.OCEAN_SIZE/2.0;
+        var n = xPos;// + this.OCEAN_SIZE/2.0;
+        var m = zPos;// + this.OCEAN_SIZE/2.0;
         var k = new Vector2(2.0 * Math.PI * n / u_L, 2.0 * Math.PI * m / u_L);
         var lengthK = k.length();
     
@@ -151,7 +151,7 @@ class Scene {
         var kDotWind = k_Nor.dot(this.wind.normalize());
         var cosP = kDotWind;
         var temp = L * lengthK;
-        var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, 4.0) * cosP * cosP;
+        var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, -4.0) * cosP * cosP;
     
         var wl = L / 10000.0;
         P *= Math.exp(lengthK * lengthK *  (wl* wl));
@@ -190,7 +190,7 @@ class Scene {
         var kDotWind = k_Nor.dot(this.wind.normalize());
         var cosP = kDotWind;
         var temp = L * lengthK;
-        var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, 4.0) * cosP * cosP;
+        var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, -4.0) * cosP * cosP;
     
         var wl = L / 10000.0;
         P *= Math.exp(lengthK * lengthK *  (wl* wl));
@@ -299,7 +299,7 @@ class Scene {
 
     var cosP = Math.length(Math.dot (Math.normalize(k), Math.normalize(this.wind)));
     var temp = lengthK * L;
-    var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, 4.0) * cosP * cosP;
+    var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, -4.0) * cosP * cosP;
 
     var wl = L / 10000.0;
     P *= Math.exp(lengthK * lengthK * (wl * wl));
