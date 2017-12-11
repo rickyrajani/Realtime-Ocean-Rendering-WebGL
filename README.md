@@ -28,6 +28,15 @@ We also implemented procedural terrain using perlin noise in order to provide a 
 ### Milestone 4
 ![](screenshots/Capture1024.PNG)
 
+### Performance Analysis
+![](screenshots/chart1.png)
+
+Our first major optimization was view-dependent geometry. In our scene, we construct the ocean plane as a square mesh. Our view-dependent geometry breaks this mesh down into nine square patches. The center patch of the ocean has a higher resolution and the surrounding patches are rendered at a lower resolution. In order to determine the performance gain from view-dependent geometry, we rendered the ocean at a high resolution for the entierty of the plane and compared it to a view-dependent construction. There was a significant performance gain as you can see in the graph above. As the resolution increased, the performance game decreases.
+
+![](screenshots/chart2.png)
+
+Our next attempted optimization was moving the calculation of the Phillips spectrum from the GPU to a preprocessing step on the CPU. The calculation of the Phillips spectrum included sampling random Gaussian distribution for two numbers and a number of exponential calculations that we thought would be costly on the GPU. Since they only needed to be computed once for each point in the mesh, we thought that it would be faster as a preprocessing step. As you can see in the graph above, it was not a significant performance improvement. In some cases, the preprocessing took longer. We soon realized that we were creating our buffers every frame which was substantially detrimental to our performance.
+
 
 ### Credits
 
