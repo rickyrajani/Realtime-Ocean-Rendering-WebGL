@@ -18,7 +18,7 @@ export default class Renderer {
     });
 
     this._shaderProgramOcean = loadShaderProgram(vsSourceOcean, fsSourceOcean(), {
-      uniforms: ['u_viewProjectionMatrix', 'u_viewMatrix', 'u_noise', 'u_time', 'u_L', 'u_resolution', 'u_cameraPos', 'u_A', 'u_V'],
+      uniforms: ['u_viewProjectionMatrix', 'u_viewMatrix', 'u_noise', 'u_time', 'u_L', 'u_resolution', 'u_cameraPos', 'u_A', 'u_V', 'u_choppiness'],
       attribs: ['a_position', 'a_heightMap', 'a_w'],
     });
 
@@ -34,6 +34,7 @@ export default class Renderer {
     this._noise = params.noise;
     this._wind = params.wind;
     this._speed = params.speed;
+    this._choppiness = params.choppiness;
 
     scene.wireframe = params.wireframe;
     scene.OCEAN_SIZE = params.size;
@@ -83,6 +84,7 @@ export default class Renderer {
     gl.uniform1i(this._shaderProgramOcean.u_resolution, scene.OCEAN_RESOLUTION);
     gl.uniform1f(this._shaderProgramOcean.u_A, scene.amplitude);
     gl.uniform1f(this._shaderProgramOcean.u_V, this._wind);
+    gl.uniform1f(this._shaderProgramOcean.u_choppiness, this._choppiness);
     scene.loadTexture();
     scene.drawOcean(this._shaderProgramOcean);
 
