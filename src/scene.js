@@ -92,6 +92,15 @@ class Scene {
         this.indices.push(UL);
       }
     }
+
+    this.vertexBuffer = gl.createBuffer();
+    this.indicesBuffer = gl.createBuffer();
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW);
   }
 
   createPatchBuffers() {
@@ -334,14 +343,14 @@ class Scene {
   drawOcean(shaderProgram) {
     if (this._texID) {
       // Ocean water plane
-      var vertexBuffer = gl.createBuffer();
-      var indicesBuffer = gl.createBuffer();
-      var heightMapBuffer = gl.createBuffer();
-      var wBuffer = gl.createBuffer();
+      // var vertexBuffer = gl.createBuffer();
+      // var indicesBuffer = gl.createBuffer();
+      // var heightMapBuffer = gl.createBuffer();
+      // var wBuffer = gl.createBuffer();
 
       // Bind ocean vertex positions
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
       gl.enableVertexAttribArray(shaderProgram.a_position);
       gl.vertexAttribPointer(shaderProgram.a_position, 3, gl.FLOAT, false, 3 * FLOAT_SIZE, 0);  
 
@@ -358,7 +367,7 @@ class Scene {
       // gl.vertexAttribPointer(shaderProgram.a_w, 1, gl.FLOAT, false, FLOAT_SIZE, 0);  
 
       // Bind ocean vertex indices
-      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBuffer);
       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint32Array(this.indices), gl.STATIC_DRAW);
 
       var mode = gl.TRIANGLES;
