@@ -31,6 +31,17 @@ module.exports = function(env) {
           test: /\.glsl$/,
           loader: 'webpack-glsl-loader'
         },
+        {
+          test: /\.(png|jpg|gif)$/,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                publicPath: 'build/'
+              }
+            }
+          ]
+        },
       ],
     },
     plugins: [

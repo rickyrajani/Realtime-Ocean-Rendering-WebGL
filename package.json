@@ -19,6 +19,7 @@
     "babel-loader": "^7.1.2",
     "babel-minify-webpack-plugin": "^0.2.0",
     "babel-preset-env": "^1.6.0",
+    "file-loader": "^1.1.5",
     "webpack": "^3.7.1",
     "webpack-dev-server": "^2.9.2",
     "webpack-glsl-loader": "^1.0.1"

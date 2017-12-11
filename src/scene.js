@@ -243,9 +243,9 @@ class Scene {
     var count = 0;
     var img = new Array(6);
     var urls = [
-      "../img/cloudtop_ft.jpg", "../img/cloudtop_bk.jpg", 
-      "../img/cloudtop_up.jpg", "../img/cloudtop_dn.jpg", 
-      "../img/cloudtop_rt.jpg", "../img/cloudtop_lf.jpg"
+      require("../img/cloudtop_ft.jpg"), require("../img/cloudtop_bk.jpg"), 
+      require("../img/cloudtop_up.jpg"), require("../img/cloudtop_dn.jpg"), 
+      require("../img/cloudtop_rt.jpg"), require("../img/cloudtop_lf.jpg")
     ];
     for (var i = 0; i < 6; i++) {
         img[i] = new Image();
