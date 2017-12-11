@@ -113,7 +113,6 @@ class Scene {
 
   createPatchBuffers() {
     this.verticesLowRes = [];
-
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         for (let z = 0; z < this.OCEAN_LOW_RES; z++) {
@@ -244,63 +243,17 @@ class Scene {
     }
   }
 
-// https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
-// Standard Normal variate using Box-Muller transform.
-  gausRand() {
-    var u = 0, v = 0;
-    while(u === 0) u = Math.random(); //Converting [0,1) to (0,1)
-    while(v === 0) v = Math.random();
-    return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
-  }
-
-  getH_0(k, P) {
-    var rand1 = this.gausRand();
-    var rand2 = this.gausRand();
-    return new Vector2( 1.0 / Math.pow (2.0, 0.5) * rand1 * Math.sqrt(P), 
-      1.0 / Math.sqrt(2.0) * rand2 * Math.pow(P, 0.5));
-  }
-
-  getHeightMap(x, z) {
-    var n = x;
-    var m = z;
-    var k = new Vector2(2.0 * PI * n / u_L, 2.0 * Math.PI * m / u_L);
-    var lengthK = Math.length(k);
-
-    // largest possible waves arising from a continuous wind of speed
-    var L = u_V * u_V / g;
-
-    var cosP = Math.length(Math.dot (Math.normalize(k), Math.normalize(this.wind)));
-    var temp = lengthK * L;
-    var P = u_A * Math.exp( -1.0 / (temp * temp)) * Math.pow(lengthK, -4.0) * cosP * cosP;
-
-    var wl = L / 10000.0;
-    P *= Math.exp(lengthK * lengthK * (wl * wl));
-
-    var h_0 = getH_0(k, P);
-    var h_0_star = getH_0(-k, P);
-    var w = Math.sqrt(g * lengthK);
-    
-    return new Vector3(h_0, h_0_star, w);
-  }
-
   drawSkybox(shaderProgram) {
-    if(this._texID) {
       gl.bindBuffer(gl.ARRAY_BUFFER, this.model.coordsBuffer);
-      // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.modelData.vertexPositions), gl.STATIC_DRAW);
       gl.enableVertexAttribArray(shaderProgram.a_coords);
       gl.vertexAttribPointer(shaderProgram.a_coords, 3, gl.FLOAT, false, 0, 0);
       
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.model.indexBuffer);
-      gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.modelData.indices), gl.STATIC_DRAW);
   
       gl.drawElements(gl.TRIANGLES, this.model.count, gl.UNSIGNED_SHORT, 0);
-    }
   }
 
   drawOcean(shaderProgram) {
-    if (this._texID) {
-      // Ocean water plane
-
       // Bind ocean vertex positions
       gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
       gl.enableVertexAttribArray(shaderProgram.a_position);
@@ -314,7 +267,6 @@ class Scene {
         mode = gl.LINES
       }
       gl.drawElements(mode, this.indices.length, gl.UNSIGNED_INT, 0);
-    }
   }
 
   drawOceanLowRes(shaderProgram, count) {
@@ -337,16 +289,12 @@ class Scene {
 
   bindOceanLowResBuffers(shaderProgram) {
     if (this._texID) {
-      // Ocean water plane
       // Bind ocean vertex indices
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indicesBufferLowRes);
     }
   }
 
   drawTerrain(shaderProgram) {
-    if (this._texID) {
-    // Terrain plane
-    
     // Bind vertex positions
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBufferTerrain);
     gl.enableVertexAttribArray(shaderProgram.a_position);
@@ -360,7 +308,6 @@ class Scene {
       mode = gl.LINES
     }
     gl.drawElements(mode, this.terrainIndices.length, gl.UNSIGNED_INT, 0);
-  }
 }
 
 }
